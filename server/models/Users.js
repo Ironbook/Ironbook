@@ -43,7 +43,7 @@ const UsersSchema = new mongoose.Schema({
 		trim: true,
 		match: /^([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)$/,
 	},
-	username: {
+	userName: {
 		type: String,
 		minlength: 3,
 		maxlength: 30,
