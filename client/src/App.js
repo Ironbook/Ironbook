@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
+import actions from './api'
+import { Switch, Route, Link } from 'react-router-dom'
+
+// Components
 import Home from './components/Home'
 import AddPost from './components/AddPost'
 import AllPosts from './components/AllPosts'
 import Auth from './components/Auth'
 import Profile from './components/Profile'
-import actions from './api'
-import { Switch, Route, Link } from 'react-router-dom'
+import Navbar from './components/Navbar'
 
 function App() {
 	const [user, setUser] = useState({})
@@ -23,6 +26,7 @@ function App() {
 		<div className='App'>
 			<h1> Ironbook 🚀 </h1>
 			<h4>{user.email}</h4>
+			<Navbar />
 			<nav>
 				<Link to='/'>Home</Link>
 				<Link to='all-posts'>All Posts</Link>
