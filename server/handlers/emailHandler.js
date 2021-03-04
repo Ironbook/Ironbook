@@ -10,9 +10,7 @@ exports.sendVerificationEmail = (data) => {
 			_id,
 		},
 		process.env.JWT_KEY,
-		{
-			expiresIn: '60m',
-		}
+		{ expiresIn: '60m' }
 	)
 
 	// Config for new user email
