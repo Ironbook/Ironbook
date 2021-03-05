@@ -50,9 +50,19 @@ mongoose
 	.catch((err) => console.error('Error connecting to mongo', err))
 
 // Add our Models and Routes
+app.use(require('./routes'))
+
+require('./models/Comment')
+require('./models/CommentLike')
+require('./models/CommentReply')
+require('./models/CommentReplyLike')
+require('./models/Followers')
+require('./models/Following')
+require('./models/Notification')
+require('./models/Post')
+require('./models/PostLike')
 require('./models/Users')
 require('./config/passport')
-app.use(require('./routes'))
 
 // Errors and Middleware
 if (!isProduction) {
