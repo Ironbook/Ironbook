@@ -10,3 +10,5 @@ client/.env
 server/tests
 
 **/.env
+**/.DS_Store
+.DS_Store
