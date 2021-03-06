@@ -8,7 +8,7 @@ const path = require('path')
 const session = require('express-session')
 
 // Set-up Mongo
-const MONGO_URI = process.env.MONGO_URI || `mongodb://localhost/localIronPlate`
+const MONGO_URI = process.env.MONGO_URI
 const PORT = process.env.PORT || 5000
 mongoose.promise = global.Promise
 
@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, '../client/public')))
 // We need to secure this on production.
 app.use(
 	session({
-		secret: 'Ironhack duck',
+		secret: process.env.SECRET,
 		cookie: { maxAge: 60000 },
 		resave: false,
 		saveUninitialized: false,
