@@ -50,7 +50,11 @@ mongoose
 	.catch((err) => console.error('Error connecting to mongo', err))
 
 // Add our Models and Routes
-app.use(require('./routes'))
+// app.use(require('./routes'))
+const postsRouter = require('./routes/post')
+const usersRouter = require('./routes/user')
+const commentsRouter = require('./routes/comment')
+const notificationRouter = require('./routes/notification')
 
 require('./models/Comment')
 require('./models/CommentLike')
@@ -63,7 +67,12 @@ require('./models/Post')
 require('./models/PostLike')
 require('./models/Users')
 require('./config/passport')
+app.use('/api/post/', postsRouter)
+app.use('/api/user/', usersRouter)
+app.use('/api/comment/', commentsRouter)
+app.use('/api/notification/', notificationRouter)
 
+const userController = require('./controllers/userController')
 // Errors and Middleware
 if (!isProduction) {
 	app.use((err, req, res) => {
@@ -76,12 +85,31 @@ if (!isProduction) {
 		})
 	})
 }
+
 app.use((err, req, res) => {
 	res.status(err.status || 500)
 	res.json({
 		errors: {
 			message: err.message,
 			error: {},
+		},
+	})
+})
+
+app.get('/auth/reset/password/:jwt', function (req, res) {
+	return res.status(404).json({ message: 'go to port 3000' })
+})
+
+app.use((req, res, next) => {
+	next(createError(404))
+})
+
+app.use((err, req, res, next) => {
+	console.log(err)
+	res.status(err.status || 500)
+	res.json({
+		error: {
+			message: err.message,
 		},
 	})
 })
