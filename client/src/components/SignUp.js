@@ -85,10 +85,18 @@ export default function SignIn() {
 								autoComplete='current-password'
 							/>
 							<FormControlLabel
-								control={<Checkbox value='remember' color='primary' />}
+								style={{ color: '#7F8390' }}
+								control={
+									<Checkbox
+										style={{ color: '#2DC5FA' }}
+										value='remember'
+										color='primary'
+									/>
+								}
 								label='Remember me'
 							/>
 							<Button
+								style={{ backgroundColor: '#2DC5FA' }}
 								type='submit'
 								fullWidth
 								variant='contained'
@@ -99,21 +107,19 @@ export default function SignIn() {
 							</Button>
 							<Grid container>
 								<Grid item xs>
-									<Link href='#' variant='body2'>
+									<Link style={{ color: '#7F8390' }} href='#' variant='body2'>
 										Forgot password?
 									</Link>
 								</Grid>
 								<Grid item>
-									<Link href='#' variant='body2'>
+									<Link style={{ color: '#7F8390' }} href='#' variant='body2'>
 										{"Don't have an account? Sign Up"}
 									</Link>
 								</Grid>
 							</Grid>
 						</form>
 					</div>
-					<Box mt={8}>
-						<Copyright />
-					</Box>
+					<Box mt={8}>{/* <Copyright /> */}</Box>
 				</Container>
 			</div>
 		</div>
