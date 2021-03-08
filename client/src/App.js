@@ -8,13 +8,14 @@ import background from './images/NewBackground.svg';
 // Components
 import Home from './components/Home';
 import AddPost from './components/AddPost';
-import AllPosts from './components/AllPosts';
 import Auth from './components/Auth';
 import Profile from './components/Profile';
 import Navbar from './components/Navbar';
 import SignUp from './components/SignUp';
 import Logo from './components/Logo';
 import SearchBar from './components/SearchBar';
+import Messages from './components/Messages';
+import Notifications from './components/Notifications';
 
 function App() {
 	const [user, setUser] = useState({});
@@ -39,11 +40,7 @@ function App() {
 
 			<Switch>
 				<Route exact path='/' render={(props) => <Home {...props} />} />
-				<Route
-					exact
-					path='/all-posts'
-					render={(props) => <AllPosts {...props} />}
-				/>
+
 				<Route
 					exact
 					path='/add-posts'
@@ -60,6 +57,16 @@ function App() {
 					render={(props) => <Profile user={user} {...props} />}
 				/>
 				<Route exact path='/SignUp' render={(props) => <SignUp {...props} />} />
+				<Route
+					exact
+					path='/messages'
+					render={(props) => <Messages {...props} />}
+				/>
+				<Route
+					exact
+					path='/notifications'
+					render={(props) => <Notifications {...props} />}
+				/>
 			</Switch>
 		</div>
 	);

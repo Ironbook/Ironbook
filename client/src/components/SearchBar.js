@@ -17,6 +17,7 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import { createMuiTheme } from '@material-ui/core/styles';
 import green from '@material-ui/core/colors/blue';
 import logo from '../images/logo.svg';
+import { Link } from 'react-router-dom';
 
 const theme = createMuiTheme({
 	palette: {
@@ -140,33 +141,40 @@ export default function PrimarySearchAppBar() {
 			open={isMobileMenuOpen}
 			onClose={handleMobileMenuClose}
 		>
-			<MenuItem>
-				<IconButton aria-label='show 4 new mails' color='inherit'>
-					<Badge badgeContent={4} color='secondary'>
-						<MailIcon />
-					</Badge>
-				</IconButton>
-				<p>Messages</p>
-			</MenuItem>
-			<MenuItem>
-				<IconButton aria-label='show 11 new notifications' color='inherit'>
-					<Badge badgeContent={11} color='secondary'>
-						<NotificationsIcon />
-					</Badge>
-				</IconButton>
-				<p>Notifications</p>
-			</MenuItem>
-			<MenuItem onClick={handleProfileMenuOpen}>
-				<IconButton
-					aria-label='account of current user'
-					aria-controls='primary-search-account-menu'
-					aria-haspopup='true'
-					color='inherit'
-				>
-					<AccountCircle />
-				</IconButton>
-				<p>Profile</p>
-			</MenuItem>
+			<Link to='/messages'>
+				<MenuItem>
+					<IconButton aria-label='show 4 new mails' color='inherit'>
+						<Badge badgeContent={4} color='secondary'>
+							<MailIcon />
+						</Badge>
+					</IconButton>
+					<p>Messages</p>
+				</MenuItem>
+			</Link>
+
+			<Link to='/notifications'>
+				<MenuItem>
+					<IconButton aria-label='show 11 new notifications' color='inherit'>
+						<Badge badgeContent={11} color='secondary'>
+							<NotificationsIcon />
+						</Badge>
+					</IconButton>
+					<p>Notifications</p>
+				</MenuItem>
+			</Link>
+			<Link to='/profile'>
+				<MenuItem>
+					<IconButton
+						aria-label='account of current user'
+						aria-controls='primary-search-account-menu'
+						aria-haspopup='true'
+						color='inherit'
+					>
+						<AccountCircle />
+					</IconButton>
+					<p>Profile</p>
+				</MenuItem>
+			</Link>
 		</Menu>
 	);
 
