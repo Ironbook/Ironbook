@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import logo from '../images/logo.svg';
 
 function Copyright() {
 	return (
@@ -55,11 +56,20 @@ export default function SignIn() {
 				<Container component='main' maxWidth='xs'>
 					<CssBaseline />
 					<div className={classes.paper}>
-						<Avatar className={classes.avatar}>
+						<img src={logo} />
+						{/* <Avatar className={classes.avatar}>
 							<LockOutlinedIcon />
-						</Avatar>
+						</Avatar> */}
 						<Typography component='h1' variant='h5'>
-							Sign in
+							<h1
+								style={{
+									fontSize: '32px',
+									textAlign: 'center',
+									color: '#2F354A',
+								}}
+							>
+								Stay in touch with your fellow Ironhackers!
+							</h1>
 						</Typography>
 						<form className={classes.form} noValidate>
 							<TextField
@@ -85,10 +95,18 @@ export default function SignIn() {
 								autoComplete='current-password'
 							/>
 							<FormControlLabel
-								control={<Checkbox value='remember' color='primary' />}
+								style={{ color: '#7F8390' }}
+								control={
+									<Checkbox
+										style={{ color: '#2DC5FA' }}
+										value='remember'
+										color='primary'
+									/>
+								}
 								label='Remember me'
 							/>
 							<Button
+								style={{ backgroundColor: '#2DC5FA' }}
 								type='submit'
 								fullWidth
 								variant='contained'
@@ -99,21 +117,19 @@ export default function SignIn() {
 							</Button>
 							<Grid container>
 								<Grid item xs>
-									<Link href='#' variant='body2'>
+									<Link style={{ color: '#7F8390' }} href='#' variant='body2'>
 										Forgot password?
 									</Link>
 								</Grid>
 								<Grid item>
-									<Link href='#' variant='body2'>
+									<Link style={{ color: '#7F8390' }} href='#' variant='body2'>
 										{"Don't have an account? Sign Up"}
 									</Link>
 								</Grid>
 							</Grid>
 						</form>
 					</div>
-					<Box mt={8}>
-						<Copyright />
-					</Box>
+					<Box mt={8}>{/* <Copyright /> */}</Box>
 				</Container>
 			</div>
 		</div>
