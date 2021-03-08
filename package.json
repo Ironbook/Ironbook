@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "echo --- preinstall --- && cd backend && npm install && cd ../frontend && npm install && npm run build && cd ..",
-    "start": "echo --- start --- && cd backend && npm start"
+    "preinstall": "echo --- preinstall --- && cd server && npm install && cd ../client && npm install && npm run build && cd ..",
+    "start": "echo --- start --- && cd server && npm start"
   },
   "repository": {
     "type": "git",
