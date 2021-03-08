@@ -16,6 +16,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { createMuiTheme } from '@material-ui/core/styles';
 import green from '@material-ui/core/colors/blue';
+import logo from '../images/logo.svg';
 
 const theme = createMuiTheme({
 	palette: {
@@ -189,9 +190,8 @@ export default function PrimarySearchAppBar() {
 						className={classes.title}
 						variant='h6'
 						noWrap
-					>
-						Ironbook
-					</Typography>
+					></Typography>
+					<img src={logo} />
 					<div className={classes.search}>
 						<div className={classes.searchIcon}>
 							<SearchIcon style={{ color: '#7F8390' }} />

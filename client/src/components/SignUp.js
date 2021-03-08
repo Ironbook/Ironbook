@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import logo from '../images/logo.svg';
 
 function Copyright() {
 	return (
@@ -55,11 +56,20 @@ export default function SignIn() {
 				<Container component='main' maxWidth='xs'>
 					<CssBaseline />
 					<div className={classes.paper}>
-						<Avatar className={classes.avatar}>
+						<img src={logo} />
+						{/* <Avatar className={classes.avatar}>
 							<LockOutlinedIcon />
-						</Avatar>
+						</Avatar> */}
 						<Typography component='h1' variant='h5'>
-							Sign in
+							<h1
+								style={{
+									fontSize: '32px',
+									textAlign: 'center',
+									color: '#2F354A',
+								}}
+							>
+								Stay in touch with your fellow Ironhackers!
+							</h1>
 						</Typography>
 						<form className={classes.form} noValidate>
 							<TextField

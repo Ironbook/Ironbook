@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import actions from './api';
 import { Switch, Route, Link } from 'react-router-dom';
-import background from './images/background-shape.svg';
+import background from './images/NewBackground.svg';
 
 //Material UI
 
