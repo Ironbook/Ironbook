@@ -1,0 +1,22 @@
+{
+  "name": "ironplate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "echo --- preinstall --- && cd backend && npm install && cd ../frontend && npm install && npm run build && cd ..",
+    "start": "echo --- start --- && cd backend && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tzikas/IronPlate.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tzikas/IronPlate/issues"
+  },
+  
+  "homepage": "https://github.com/Tzikas/IronPlate#readme"
+}

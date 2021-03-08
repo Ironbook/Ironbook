@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "nodemon server.js"
+ "scripts": {
+    "start": "node server.js",
+    "dev": "DEBUG=backend:* nodemon server.js",
+    "dev-windows": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
