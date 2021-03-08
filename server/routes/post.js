@@ -3,7 +3,7 @@ const router = express.Router()
 const postController = require('../controllers/postController')
 const userController = require('../controllers/userController')
 const checkAuth = require('../middleware/checkAuth')
-const postValidator = require('../middleware/schemaValidators/postValidator')
+const postValidator = require('../middleware/validators/postValidator')
 
 router.post(
 	'/getPosts',

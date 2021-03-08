@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const User = mongoose.model('User')
+const User = require('../models/Users')
 const bcrypt = require('bcryptjs')
 
 exports.verificationCheck = (req, res, next) => {
