@@ -27,6 +27,9 @@ app.use(require('morgan')('dev'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, '../client/public')))
+app.get('*', (req, res, next) => {
+	res.sendFile(path.join(__dirname, '../client/build/index.html'))
+})
 // We need to secure this on production.
 app.use(
 	session({
