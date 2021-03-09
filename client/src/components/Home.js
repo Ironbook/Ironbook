@@ -44,9 +44,12 @@ function Home(props) {
 		return posts.map((eachpost) => {
 			console.log(eachpost);
 			return (
-				<li>
-					<div>{eachpost.description}</div>
-					<img src={eachpost.photo} />
+				<li className='postContainer'>
+					<div className='postBox'>{eachpost.description}</div>
+					<div className='imgBox'>
+						<img src={eachpost.photo} />
+						<div className='commentBox'> add comment...</div>
+					</div>
 				</li>
 			);
 		});
@@ -54,8 +57,7 @@ function Home(props) {
 
 	return (
 		<>
-			<h3>Home</h3>
-			{showPosts()}
+			<div className='showPosts'>{showPosts()}</div>
 		</>
 	);
 }
