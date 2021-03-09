@@ -32,11 +32,11 @@ function App() {
 	return (
 		<div className='App' style={{ backgroundImage: `url(${background})` }}>
 			<SearchBar />
-			<h4>{user.email}</h4>
+			{/* <h4>{user.email}</h4>
 			<nav>
 				<Link to='/'>Home</Link>
 				<Link to='SignUp'>Sign Up</Link>
-			</nav>
+			</nav> */}
 
 			<Switch>
 				<Route exact path='/' render={(props) => <Home {...props} />} />
