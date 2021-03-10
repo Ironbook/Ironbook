@@ -125,8 +125,10 @@ export default function PrimarySearchAppBar() {
 			open={isMenuOpen}
 			onClose={handleMenuClose}
 		>
-			<MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+			<MenuItem onClick={handleMenuClose}>Messages</MenuItem>
 			<MenuItem onClick={handleMenuClose}>My account</MenuItem>
+			<MenuItem onClick={handleMenuClose}>Messages</MenuItem>
+			<MenuItem onClick={handleMenuClose}>Messages</MenuItem>
 		</Menu>
 	);
 
@@ -181,7 +183,7 @@ export default function PrimarySearchAppBar() {
 	return (
 		<div className={classes.grow}>
 			<AppBar
-				position='static'
+				position='fixed'
 				style={{ backgroundColor: 'white', color: 'black' }}
 			>
 				<Toolbar>
@@ -199,7 +201,9 @@ export default function PrimarySearchAppBar() {
 						variant='h6'
 						noWrap
 					></Typography>
-					<img src={logo} />
+					<Link to='/'>
+						<img className='logo' src={logo} />
+					</Link>
 					<div className={classes.search}>
 						<div className={classes.searchIcon}>
 							<SearchIcon style={{ color: '#7F8390' }} />
@@ -216,16 +220,28 @@ export default function PrimarySearchAppBar() {
 					</div>
 					<div className={classes.grow} />
 					<div className={classes.sectionDesktop}>
-						<IconButton aria-label='show 4 new mails' color='inherit'>
-							<Badge badgeContent={4} color='secondary'>
-								<MailIcon />
-							</Badge>
-						</IconButton>
-						<IconButton aria-label='show 17 new notifications' color='inherit'>
-							<Badge badgeContent={17} color='secondary'>
-								<NotificationsIcon />
-							</Badge>
-						</IconButton>
+						<Link to='/messages'>
+							<IconButton
+								style={{ color: '#1F2433' }}
+								aria-label='show 4 new mails'
+								color='inherit'
+							>
+								<Badge badgeContent={10} color='secondary'>
+									<MailIcon />
+								</Badge>
+							</IconButton>
+						</Link>
+						<Link to='/notifications'>
+							<IconButton
+								style={{ color: '#1F2433' }}
+								aria-label='show 17 new notifications'
+								color='inherit'
+							>
+								<Badge badgeContent={10} color='secondary'>
+									<NotificationsIcon />
+								</Badge>
+							</IconButton>
+						</Link>
 						<IconButton
 							edge='end'
 							aria-label='account of current user'
