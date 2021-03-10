@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const path = require('path')
 const session = require('express-session')
 
+console.log('Hello from the start of the server')
 // Set-up Mongo
 const MONGO_URI = process.env.MONGO_URI
 const PORT = process.env.PORT || 5000
@@ -26,10 +27,8 @@ app.use(
 app.use(require('morgan')('dev'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname, '../client/public')))
-app.get('*', (req, res, next) => {
-	res.sendFile(path.join(__dirname, '../client/build/index.html'))
-})
+// app.use(express.static(path.join(__dirname, '../client/public')))
+
 // We need to secure this on production.
 app.use(
 	session({
@@ -77,49 +76,53 @@ app.use('/api/notification/', notificationRouter)
 
 const userController = require('./controllers/userController')
 // Errors and Middleware
-if (!isProduction) {
-	app.use((err, req, res) => {
-		res.status(err.status || 500)
-		res.json({
-			errors: {
-				message: err.message,
-				error: err,
-			},
-		})
-	})
-}
+// if (!isProduction) {
+// 	app.use((err, req, res) => {
+// 		res.status(err.status || 500)
+// 		res.json({
+// 			errors: {
+// 				message: err.message,
+// 				error: err,
+// 			},
+// 		})
+// 	})
+// }
 
-app.use((err, req, res) => {
-	res.status(err.status || 500)
-	res.json({
-		errors: {
-			message: err.message,
-			error: {},
-		},
-	})
-})
+// app.use((err, req, res) => {
+// 	res.status(err.status || 500)
+// 	res.json({
+// 		errors: {
+// 			message: err.message,
+// 			error: {},
+// 		},
+// 	})
+// })
 
-app.get('/auth/reset/password/:jwt', function (req, res) {
-	return res.status(404).json({ message: 'go to port 3000' })
-})
+// app.get('/auth/reset/password/:jwt', function (req, res) {
+// 	return res.status(404).json({ message: 'go to port 3000' })
+// })
 
-app.use((req, res, next) => {
-	next(createError(404))
-})
+// app.use((req, res, next) => {
+// 	next(createError(404))
+// })
 
-app.use((err, req, res, next) => {
-	console.log(err)
-	res.status(err.status || 500)
-	res.json({
-		error: {
-			message: err.message,
-		},
-	})
-})
+// app.use((err, req, res, next) => {
+// 	console.log(err)
+// 	res.status(err.status || 500)
+// 	res.json({
+// 		error: {
+// 			message: err.message,
+// 		},
+// 	})
+// })
 
 // Make the Server display Client.
+// app.get('*', (req, res, next) => {
+// 	res.sendFile(path.join(__dirname, '../client/public/index.html'))
+// })
 app.get('*', (req, res, next) => {
-	res.sendFile(path.join(__dirname, '../client/public/index.html'))
+	res.sendFile(path.join(__dirname, '../client/build/index.html'))
+	console.log('Hello from the build')
 })
-
+console.log('Hello from the end of the server')
 app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`))

@@ -6,7 +6,7 @@ client/node_modules
 .env
 server/.env
 client/.env
-
+client/build
 server/test
 
 **/.env

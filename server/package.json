@@ -2,11 +2,11 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "DEBUG=backend:* nodemon server.js",
-    "dev-windows": "nodemon server.js"
+    "start": "node app.js",
+    "dev": "DEBUG=backend:* nodemon app.js",
+    "dev-windows": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
