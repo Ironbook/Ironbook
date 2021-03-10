@@ -118,8 +118,8 @@ app.use((err, req, res, next) => {
 })
 
 // Make the Server display Client.
-// app.get('*', (req, res, next) => {
-// 	res.sendFile(path.join(__dirname, '../client/public/index.html'))
-// })
+app.get('*', (req, res, next) => {
+	res.sendFile(path.join(__dirname, '../client/public/index.html'))
+})
 
 app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`))
