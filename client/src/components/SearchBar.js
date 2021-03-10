@@ -225,7 +225,13 @@ export default function PrimarySearchAppBar() {
 					<div className={classes.grow} />
 					<div className={classes.sectionDesktop}>
 						<Link to='./newpost'>
-							<PostAddIcon style={{ color: '#1F2433', marginTop: '11px' }} />
+							<PostAddIcon
+								style={{
+									color: '#1F2433',
+									marginTop: '11px',
+									marginRight: '10px',
+								}}
+							/>
 						</Link>
 						<Link to='/messages'>
 							<IconButton
@@ -233,7 +239,7 @@ export default function PrimarySearchAppBar() {
 								aria-label='show 4 new mails'
 								color='inherit'
 							>
-								<Badge badgeContent={10} color='secondary'>
+								<Badge badgeContent={0} color='secondary'>
 									<MailIcon />
 								</Badge>
 							</IconButton>
@@ -244,7 +250,7 @@ export default function PrimarySearchAppBar() {
 								aria-label='show 17 new notifications'
 								color='inherit'
 							>
-								<Badge badgeContent={10} color='secondary'>
+								<Badge badgeContent={0} color='secondary'>
 									<NotificationsIcon />
 								</Badge>
 							</IconButton>
