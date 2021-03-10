@@ -7,13 +7,13 @@ import background from './images/NewBackground.svg';
 
 // Components
 import Home from './components/Home';
-import AddPost from './components/AddPost';
+import NewPost from './components/NewPost';
 import Auth from './components/Auth';
 import Profile from './components/Profile';
 import Navbar from './components/Navbar';
 import SignUp from './components/SignUp';
 import Logo from './components/Logo';
-import SearchBar from './components/SearchBar';
+// import SearchBar from './components/SearchBar';
 import Messages from './components/Messages';
 import Notifications from './components/Notifications';
 
@@ -37,20 +37,14 @@ function App() {
 				backgroundAttachment: 'fixed',
 			}}
 		>
-			<SearchBar />
-			{/* <h4>{user.email}</h4>
-			<nav>
-				<Link to='/'>Home</Link>
-				<Link to='SignUp'>Sign Up</Link>
-			</nav> */}
-
+			{/* <SearchBar /> */}
 			<Switch>
 				<Route exact path='/' render={(props) => <Home {...props} />} />
 
 				<Route
 					exact
-					path='/add-posts'
-					render={(props) => <AddPost {...props} />}
+					path='/NewPost'
+					render={(props) => <NewPost {...props} />}
 				/>
 				<Route
 					exact

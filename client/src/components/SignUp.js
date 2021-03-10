@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, withTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import logo from '../images/logo.svg';
+import { Switch } from 'react-router';
 
 function Copyright() {
 	return (
@@ -105,6 +106,7 @@ export default function SignIn() {
 								}
 								label='Remember me'
 							/>
+
 							<Button
 								style={{ backgroundColor: '#2DC5FA' }}
 								type='submit'
@@ -113,8 +115,9 @@ export default function SignIn() {
 								color='primary'
 								className={classes.submit}
 							>
-								Sign In
+								Log In
 							</Button>
+
 							<Grid container>
 								<Grid item xs>
 									<Link style={{ color: '#7F8390' }} href='#' variant='body2'>

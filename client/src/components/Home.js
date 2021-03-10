@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import SearchBar from './SearchBar';
 // import { userActions } from '../actions/userActions';
+
 function Home(props) {
 	const [posts, setPosts] = useState([]);
 
@@ -54,7 +56,7 @@ function Home(props) {
 					<div className='authorBox'>
 						<img className='profileImg' src={eachpost.profileImg} />
 						<h1 className='authorName'>{eachpost.author}</h1>
-						<div className='authorLocation'>{eachpost.location}</div>
+						{/* <div className='authorLocation'>{eachpost.location}</div> */}
 					</div>
 					<div className='postBox'>{eachpost.description}</div>
 					<div className='imgBox'>
@@ -68,6 +70,7 @@ function Home(props) {
 
 	return (
 		<>
+			<SearchBar />
 			<div className='showPosts'>{showPosts()}</div>
 		</>
 	);

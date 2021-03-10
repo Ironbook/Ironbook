@@ -1,38 +1,43 @@
-import React, { useState } from 'react';
-import actions from '../api'
+// import React, { useState } from 'react';
+// import { addPost } from '../actions/postActions';
+// import SearchBar from './SearchBar';
 
-function AddPost(props) {
+// function newPost(props) {
+// 	let [post, setPost] = useState('');
 
-    let [post, setPost] = useState('')
+// 	const handleSubmit = (event) => {
+// 		//Send it to the server!
+// 		event.preventDefault();
 
-    const handleSubmit = (event) => {
-        //Send it to the server! 
-        event.preventDefault()
+// 		addPost(post)
+// 			.then((newPost) => {
+// 				console.log('new post!', newPost);
+// 				//Redirect to all-posts page
+// 				props.history.push(`all-posts`);
+// 			})
+// 			.catch(console.error);
+// 	};
 
-        actions.addPost(post)
-            .then(newPost => {
-                console.log('new post!', newPost)
-                //Redirect to all-posts page
-                props.history.push(`all-posts`)
-            }).catch(console.error)
-    }
+// 	const handleChange = (event) => {
+// 		//On typing setPost
+// 		setPost(event.target.value);
+// 	};
 
-    const handleChange = (event) => {
-        //On typing setPost 
-        setPost(event.target.value)
-    }
+// 	return (
+// 		<div>
+// 			<h3>Make a AddPost</h3>
+// 			<SearchBar />
+// 			<form onSubmit={handleSubmit}>
+// 				<input
+// 					onChange={handleChange}
+// 					type='text'
+// 					name='post'
+// 					placeholder='Make a post...'
+// 				/>
+// 				<button>📬</button>
+// 			</form>
+// 		</div>
+// 	);
+// }
 
-    return (
-        <>
-            <h3>Make a AddPost</h3>
-
-            <form onSubmit={handleSubmit}>
-                <input onChange={handleChange} type="text" name="post" placeholder="Make a post..." />
-                <button>📬</button>
-            </form>
-
-        </>
-    );
-}
-
-export default AddPost;
+// export default AddPost;
