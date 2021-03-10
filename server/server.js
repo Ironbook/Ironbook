@@ -46,9 +46,16 @@ if (!isProduction) {
 
 // Lets get that DATA!
 mongoose
-	.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+	.connect(MONGO_URI, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		useCreateIndex: true,
+		useFindAndModify: false,
+	})
 	.then((x) =>
-		console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
+		console.log(
+			`Connected to Mongo! Database name: "${x.connections[0].name}"`
+		)
 	)
 	.catch((err) => console.error('Error connecting to mongo', err))
 
@@ -58,7 +65,6 @@ const postsRouter = require('./routes/post')
 const usersRouter = require('./routes/users')
 const commentsRouter = require('./routes/comment')
 const notificationRouter = require('./routes/notification')
-
 require('./models/Comment')
 require('./models/CommentLike')
 require('./models/CommentReply')
@@ -75,21 +81,15 @@ app.use('/api/users/', usersRouter)
 app.use('/api/comment/', commentsRouter)
 app.use('/api/notification/', notificationRouter)
 
-const userController = require('./controllers/userController')
 // Errors and Middleware
 if (!isProduction) {
-	app.use((err, req, res) => {
+	app.use((error, req, res, next) => {
 		res.status(err.status || 500)
-		res.json({
-			errors: {
-				message: err.message,
-				error: err,
-			},
-		})
+		res.json({ errors: { ...error } })
 	})
 }
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
 	res.status(err.status || 500)
 	res.json({
 		errors: {
@@ -103,23 +103,11 @@ app.get('/auth/reset/password/:jwt', function (req, res) {
 	return res.status(404).json({ message: 'go to port 3000' })
 })
 
-app.use((req, res, next) => {
-	next(createError(404))
-})
-
-app.use((err, req, res, next) => {
-	console.log(err)
-	res.status(err.status || 500)
-	res.json({
-		error: {
-			message: err.message,
-		},
-	})
-})
-
 // Make the Server display Client.
 // app.get('*', (req, res, next) => {
 // 	res.sendFile(path.join(__dirname, '../client/public/index.html'))
 // })
-
-app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`))
+if (process.env.NODE_ENV !== 'test') {
+	app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`))
+}
+module.exports = { app }

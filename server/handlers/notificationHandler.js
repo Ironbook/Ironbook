@@ -1,9 +1,9 @@
+const io = require('socket.io')(3000)
 function idToString(id) {
 	return id.toString()
 }
 
 exports.sendLikeCommenNotification = (req, values) => {
-	const io = req.app.get('socketio')
 	if (req.userData.userId !== req.body.authorId) {
 		const { profilePicture, username } = values[0]
 		const { _id, read, comment, post, type, createdAt } = values[1]
@@ -27,7 +27,6 @@ exports.sendLikeCommenNotification = (req, values) => {
 }
 
 exports.sendLikeCommenReplyNotification = (req, values) => {
-	const io = req.app.get('socketio')
 	if (req.userData.userId !== req.body.authorId) {
 		const { profilePicture, username } = values[0]
 		const { _id, read, reply, post, type, createdAt } = values[1]
@@ -51,7 +50,6 @@ exports.sendLikeCommenReplyNotification = (req, values) => {
 }
 
 exports.sendLikePostNotification = (req, values) => {
-	const io = req.app.get('socketio')
 	if (req.userData.userId !== req.body.authorId) {
 		const { profilePicture, username } = values[0]
 		const { _id, read, post, type, createdAt } = values[1]
@@ -75,7 +73,6 @@ exports.sendLikePostNotification = (req, values) => {
 }
 
 exports.sendFollowNotification = (req, values) => {
-	const io = req.app.get('socketio')
 	if (req.userData.userId !== req.body.userId) {
 		const { profilePicture, username } = values[0]
 		const { _id, read, type, createdAt } = values[1]
@@ -97,7 +94,6 @@ exports.sendFollowNotification = (req, values) => {
 }
 
 exports.sendAddCommentReplyNotification = (req, values) => {
-	const io = req.app.get('socketio')
 	if (req.userData.userId !== req.body.authorId) {
 		const { profilePicture, username } = values[0]
 		const { _id, read, type, comment, reply, post, createdAt } = values[1]
@@ -122,7 +118,6 @@ exports.sendAddCommentReplyNotification = (req, values) => {
 }
 
 exports.sendAddCommentNotification = (req, values) => {
-	const io = req.app.get('socketio')
 	if (req.userData.userId !== req.body.authorId) {
 		const { profilePicture, username } = values[0]
 		const { _id, read, post, type, comment, reply, createdAt } = values[1]
@@ -148,7 +143,7 @@ exports.sendAddCommentNotification = (req, values) => {
 
 exports.sendCommentTaggedNotification = (params) => {
 	const { req, removedUserid, user, notification } = params
-	const io = req.app.get('socketio')
+
 	const { _id, read, type, createdAt, post } = notification
 	const { profilePicture, username } = user
 	removedUserid.forEach((user) => {
@@ -174,7 +169,7 @@ exports.sendCommentTaggedNotification = (params) => {
 
 exports.sendCommentMentionNotification = (params) => {
 	const { req, removedUserid, user, notification } = params
-	const io = req.app.get('socketio')
+
 	const { _id, read, type, createdAt, post } = notification
 	const { profilePicture, username } = user
 	removedUserid.forEach((user) => {
@@ -200,7 +195,7 @@ exports.sendCommentMentionNotification = (params) => {
 
 exports.sendNewUser = (params) => {
 	const { req, user } = params
-	const io = req.app.get('socketio')
+
 	const { profilePicture, username, _id } = user
 	io.sockets.emit('newUser', {
 		username,

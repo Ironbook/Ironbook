@@ -16,7 +16,9 @@ const emailHandler = require('../handlers/emailHandler')
 
 function checkFileType(file, cb) {
 	const filetypes = /jpeg|jpg|png|gif/
-	const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
+	const extname = filetypes.test(
+		path.extname(file.originalname).toLowerCase()
+	)
 	const mimetype = filetypes.test(file.mimetype)
 	if (mimetype && extname) {
 		return cb(null, true)
@@ -52,10 +54,11 @@ exports.upload = (req, res, next) => {
 		req.body.photo = req.file.filename
 		Jimp.read(req.file.path, function (err, test) {
 			if (err) throw err
-			test
-				.resize(100, 100)
+			test.resize(100, 100)
 				.quality(60)
-				.write('./public/images/profile-picture/100x100/' + req.body.photo)
+				.write(
+					'./public/images/profile-picture/100x100/' + req.body.photo
+				)
 			next()
 		})
 	})
@@ -141,7 +144,7 @@ exports.activate = (req, res) => {
 			.then(() => {
 				return res.status(200).header('Content-Type', 'text/html').send(
 					`<!DOCTYPE html>
-          <html lang="en">      
+		  <html lang="en">      
 						<head>
 							<meta charset="UTF-8">
 							<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -161,121 +164,119 @@ exports.activate = (req, res) => {
 								<strong>Account activated!</strong> .
 							</div>          
 						</body>          
-      		</html>`
+	  		</html>`
 				)
 			})
 			.catch((err) => {
 				console.log(err)
 				return res.status(401).header('Content-Type', 'text/html').send(
 					`<!DOCTYPE html>
-          	<html lang="en">          
-          		<head>
+		  	<html lang="en">          
+		  		<head>
 								<meta charset="UTF-8">
 								<meta http-equiv="X-UA-Compatible" content="IE=edge">
 								<meta name="viewport" content="width=device-width, initial-scale=1.0">
 								<meta name="theme-color" content="#000000">
-              <style>
-                .alert {
-                  padding: 20px;
-                  background-color: #f23d3d;
-                  color: #1F2433;
-                }
-              </style>
-              <title>Ironbook</title>
-          	</head>          
-          	<body>
-              <div class="alert">
-                <strong>Error!</strong> Something went wrong.
-              </div>          
-          	</body>          
-        	</html>`
+			  <style>
+				.alert {
+				  padding: 20px;
+				  background-color: #f23d3d;
+				  color: #1F2433;
+				}
+			  </style>
+			  <title>Ironbook</title>
+		  	</head>          
+		  	<body>
+			  <div class="alert">
+				<strong>Error!</strong> Something went wrong.
+			  </div>          
+		  	</body>          
+			</html>`
 				)
 			})
 	} catch (err) {
 		return res.status(401).header('Content-Type', 'text/html').send(
 			`<!DOCTYPE html>
-      	<html lang="en">      
-      	<head>
+	  	<html lang="en">      
+	  	<head>
 					<meta charset="UTF-8">
 					<meta http-equiv="X-UA-Compatible" content="IE=edge">
 					<meta name="viewport" content="width=device-width, initial-scale=1.0">
 					<meta name="theme-color" content="#000000">
-          <style>
-            .alert {
-              padding: 20px;
-              background-color: #f23d3d;
-              color: #1F2433;
-            }
-          </style>
-          <title>Ironbook</title>
-      	</head>      
-      	<body>
-          <div class="alert">
-            <strong>Error!</strong> Token Invalid.
-          </div>      
-      	</body>      
-      </html>`
+		  <style>
+			.alert {
+			  padding: 20px;
+			  background-color: #f23d3d;
+			  color: #1F2433;
+			}
+		  </style>
+		  <title>Ironbook</title>
+	  	</head>      
+	  	<body>
+		  <div class="alert">
+			<strong>Error!</strong> Token Invalid.
+		  </div>      
+	  	</body>      
+	  </html>`
 		)
 	}
 }
 
-exports.addUser = (req, res) => {
-	User.findOne({
+exports.addUser = async (req, res) => {
+	const users = await User.find({
 		$or: [{ email: req.body.email }, { username: req.body.username }],
-	}).then((user) => {
-		if (!user) {
-			bcrypt.hash(req.body.password, 10, (err, hash) => {
-				if (err) {
-					return res.status(500).json({ error: err })
-				} else {
-					const user = new User({
-						email: req.body.email,
-						firstName: req.body.firstName,
-						lastName: req.body.lastName,
-						username: req.body.username,
-						password: hash,
-					})
-					user
-						.save()
-						.then((user) => {
-							notificationHandler.sendNewUser({ req, user })
-							const following = new Following({ user: user._id }).save()
-							const followers = new Followers({ user: user._id }).save()
-							Promise.all([following, followers]).then(() => {
-								if (process.env.ENABLE_SEND_EMAIL === 'true') {
-									emailHandler.sendVerificationEmail({
-										email: user.email,
-										_id: user._id,
-										username: user.username,
-									})
-									return res.status(201).json({
-										message: 'Verify your email address',
-									})
-								} else {
-									return res.status(201).json({
-										message: 'Account created',
-									})
-								}
-							})
-						})
-						.catch((err) => {
-							return res.status(500).json({ message: err.message })
-						})
-				}
-			})
-		} else {
-			if (user.username === req.body.username) {
-				return res.status(409).json({
-					message: 'Username exists',
-				})
-			}
-			if (user.email === req.body.email) {
-				return res.status(409).json({
-					message: 'Email exists',
-				})
-			}
-		}
 	})
+	const [user] = users
+	if (!user) {
+		bcrypt.hash(req.body.password, 10, async (err, hash) => {
+			if (err) {
+				return res.status(500).json({ error: err })
+			} else {
+				const user = new User({
+					email: req.body.email,
+					firstName: req.body.firstName,
+					lastName: req.body.lastName,
+					username: req.body.username,
+					password: hash,
+				})
+				try {
+					await user.save()
+					notificationHandler.sendNewUser({ req, user })
+					const following = new Following({ user: user._id }).save()
+					const followers = new Followers({ user: user._id }).save()
+					Promise.all([following, followers]).then(() => {
+						if (process.env.ENABLE_SEND_EMAIL === 'true') {
+							emailHandler.sendVerificationEmail({
+								email: user.email,
+								_id: user._id,
+								username: user.username,
+							})
+							return res.status(201).json({
+								message: 'Verify your email address',
+							})
+						} else {
+							return res.status(201).json({
+								message: 'Account created',
+							})
+						}
+					})
+				} catch (err) {
+					return res.status(500).json({ message: err.message })
+				}
+			}
+		})
+	} else {
+		if (user.email === req.body.email) {
+			return res.status(409).json({
+				message: 'Email exists',
+			})
+		}
+		if (user.username === req.body.username) {
+			return res.status(409).json({
+				message: 'username exists',
+			})
+		}
+	}
 }
 
 exports.resetPassword = (req, res) => {
@@ -283,7 +284,10 @@ exports.resetPassword = (req, res) => {
 		if (err) {
 			return res.status(500).json({ message: err })
 		} else {
-			User.findOneAndUpdate({ email: req.userData.email }, { password: hash })
+			User.findOneAndUpdate(
+				{ email: req.userData.email },
+				{ password: hash }
+			)
 				.then(() => {
 					return res.status(200).json({ message: 'password reset.' })
 				})
@@ -324,7 +328,7 @@ exports.loginUser = (req, res, next) => {
 	User.aggregate([
 		{
 			$match: {
-				$or: [{ email: req.body.email }, { username: req.body.email }],
+				$or: [{ email: req.body.email }, { username: req.body.username }],
 			},
 		},
 		{
@@ -342,34 +346,40 @@ exports.loginUser = (req, res, next) => {
 					message: 'Incorrect credentials.',
 				})
 			} else {
-				bcrypt.compare(req.body.password, users[0].password, (err, result) => {
-					if (err) {
-						return res.status(400).json({
-							message: 'Incorrect credentials.',
-						})
-					}
-					if (result) {
-						const token = jwt.sign(
-							{
-								email: users[0].email,
-								userId: users[0]._id,
-								username: users[0].username,
-							},
-							process.env.JWT_KEY,
-							{
-								expiresIn: '30m',
-							}
-						)
-						const user = {
-							_id: users[0]._id,
-							token: 'Bearer ' + token,
+				bcrypt.compare(
+					req.body.password,
+					users[0].password,
+					(err, result) => {
+						if (err) {
+							return res.status(400).json({
+								message: 'Incorrect credentials.',
+							})
 						}
-						req.body.user = user
-						next()
-						return
+						if (result) {
+							const token = jwt.sign(
+								{
+									email: users[0].email,
+									userId: users[0]._id,
+									username: users[0].username,
+								},
+								process.env.JWT_KEY,
+								{
+									expiresIn: '30m',
+								}
+							)
+							const user = {
+								_id: users[0]._id,
+								token: 'Bearer ' + token,
+							}
+							req.body.user = user
+							next()
+							return
+						}
+						return res
+							.status(400)
+							.json({ message: 'Incorrect credentials.' })
 					}
-					return res.status(400).json({ message: 'Incorrect credentials.' })
-				})
+				)
 			}
 		})
 		.catch((err) => {
@@ -380,8 +390,7 @@ exports.loginUser = (req, res, next) => {
 
 exports.deleteUser = (req, res) => {
 	User.remove({ _id: req.userData.userId }).then((result) => {
-		res
-			.status(200)
+		res.status(200)
 			.json({
 				message: 'User deleted',
 			})
@@ -396,7 +405,12 @@ exports.deleteUser = (req, res) => {
 exports.updateUser = (req, res) => {
 	User.find({
 		$and: [
-			{ $or: [{ email: req.body.email }, { username: req.body.username }] },
+			{
+				$or: [
+					{ email: req.body.email },
+					{ username: req.body.username },
+				],
+			},
 			{ _id: { $ne: req.userData.userId } },
 		],
 	})
@@ -407,7 +421,7 @@ exports.updateUser = (req, res) => {
 
 				if (username === req.body.username) {
 					return res.status(409).json({
-						message: 'Username exists',
+						message: 'username exists',
 					})
 				}
 
@@ -437,7 +451,9 @@ exports.updateUser = (req, res) => {
 								expiresIn: '30m',
 							}
 						)
-						return res.status(200).json({ user, token: 'Bearer ' + token })
+						return res
+							.status(200)
+							.json({ user, token: 'Bearer ' + token })
 					})
 					.catch((err) => {
 						console.log(err)
@@ -476,12 +492,18 @@ exports.getUserData = (req, res, next) => {
 					email: 1,
 					bio: 1,
 					profilePicture: 1,
-					followingIds: { $arrayElemAt: ['$followings.following.user', 0] },
+					followingIds: {
+						$arrayElemAt: ['$followings.following.user', 0],
+					},
 					followings: {
-						$size: { $arrayElemAt: ['$followings.following.user', 0] },
+						$size: {
+							$arrayElemAt: ['$followings.following.user', 0],
+						},
 					},
 					followers: {
-						$size: { $arrayElemAt: ['$followers.followers.user', 0] },
+						$size: {
+							$arrayElemAt: ['$followers.followers.user', 0],
+						},
 					},
 					postLikes: '$postLikes.post',
 					commentLikes: '$commentLikes.comment',
@@ -506,7 +528,9 @@ exports.getUserData = (req, res, next) => {
 					lastName: 1,
 					username: 1,
 					profilePicture: 1,
-					followingIds: { $arrayElemAt: ['$followings.following.user', 0] },
+					followingIds: {
+						$arrayElemAt: ['$followings.following.user', 0],
+					},
 					postLikes: '$postLikes.post',
 					commentLikes: '$commentLikes.comment',
 					commentReplyLikes: '$commentReplyLikes.comment',
