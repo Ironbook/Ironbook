@@ -30,7 +30,13 @@ function App() {
 	}, []);
 
 	return (
-		<div className='App' style={{ backgroundImage: `url(${background})` }}>
+		<div
+			className='App'
+			style={{
+				backgroundImage: `url(${background})`,
+				backgroundAttachment: 'fixed',
+			}}
+		>
 			<SearchBar />
 			{/* <h4>{user.email}</h4>
 			<nav>

@@ -202,7 +202,7 @@ export default function PrimarySearchAppBar() {
 						noWrap
 					></Typography>
 					<Link to='/'>
-						<img src={logo} />
+						<img className='logo' src={logo} />
 					</Link>
 					<div className={classes.search}>
 						<div className={classes.searchIcon}>
@@ -221,18 +221,23 @@ export default function PrimarySearchAppBar() {
 					<div className={classes.grow} />
 					<div className={classes.sectionDesktop}>
 						<Link to='/messages'>
-							<IconButton aria-label='show 4 new mails' color='inherit'>
-								<Badge badgeContent={111} color='secondary'>
+							<IconButton
+								style={{ color: '#1F2433' }}
+								aria-label='show 4 new mails'
+								color='inherit'
+							>
+								<Badge badgeContent={10} color='secondary'>
 									<MailIcon />
 								</Badge>
 							</IconButton>
 						</Link>
 						<Link to='/notifications'>
 							<IconButton
+								style={{ color: '#1F2433' }}
 								aria-label='show 17 new notifications'
 								color='inherit'
 							>
-								<Badge badgeContent={11111} color='secondary'>
+								<Badge badgeContent={10} color='secondary'>
 									<NotificationsIcon />
 								</Badge>
 							</IconButton>
