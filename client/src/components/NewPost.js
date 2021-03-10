@@ -1,13 +1,12 @@
 import React from 'react';
 import SearchBar from './SearchBar';
+// import {addPost} from '../actions/postActions'
 
-function Messages(props) {
+const NewPost = () => {
 	return (
 		<div>
 			<SearchBar />
-			Messages
 		</div>
 	);
-}
-
-export default Messages;
+};
+export default NewPost;
