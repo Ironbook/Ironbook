@@ -15,6 +15,8 @@ export const userService = {
 	getNewUsers,
 }
 
+const baseURL = 'http://localhost:5000'
+
 function login(email, password) {
 	const requestOptions = {
 		method: 'POST',
@@ -85,12 +87,16 @@ function logout() {
 }
 
 function register(user) {
+	console.log(user, '????')
 	const requestOptions = {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(user),
 	}
-	return fetch('/api/user/signup/', requestOptions).then(handleResponse)
+	console.log(user)
+	return fetch(baseURL + '/api/user/signup/', requestOptions).then(
+		handleResponse
+	)
 }
 
 function getUserData(queryParams) {
@@ -211,6 +217,7 @@ function getUserProfileFollowings(userId) {
 }
 
 function handleResponse(response) {
+	console.log(response)
 	return response.text().then((text) => {
 		const data = text && JSON.parse(text)
 		if (!response.ok) {

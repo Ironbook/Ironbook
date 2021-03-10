@@ -128,7 +128,9 @@ function login(email, password) {
 }
 
 function register(user) {
+	console.log(user)
 	return (dispatch) => {
+		console.log(dispatch)
 		dispatch(request(user))
 		userService.register(user).then(
 			(data) => {

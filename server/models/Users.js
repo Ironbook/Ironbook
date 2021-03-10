@@ -43,8 +43,9 @@ const UsersSchema = new mongoose.Schema({
 		trim: true,
 		match: /^([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)$/,
 	},
-	userName: {
+	username: {
 		type: String,
+		required: true,
 		minlength: 3,
 		maxlength: 30,
 		trim: true,
@@ -112,4 +113,4 @@ UsersSchema.methods.toAuthJSON = function () {
 	}
 }
 
-mongoose.model('Users', UsersSchema)
+module.exports = mongoose.model('Users', UsersSchema)

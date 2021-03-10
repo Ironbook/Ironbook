@@ -19,7 +19,7 @@ mongoose
 app.use(
 	cors({
 		credentials: true,
-		origin: ['http://localhost:3000', 'https://iron-clad.herokuapp.com'], //Swap this with the client url
+		origin: ['http://localhost:3000', 'https://ironbook-co.herokuapp.com/'], //Swap this with the client url
 	})
 )
 
@@ -27,7 +27,30 @@ app.use(express.json())
 
 app.use(express.static(path.join(__dirname, '../client/build')))
 
-// app.use('/api', require('./routes'))
+//Routes
+const postsRouter = require('./routes/post')
+const usersRouter = require('./routes/users')
+const commentsRouter = require('./routes/comment')
+const notificationRouter = require('./routes/notification')
+app.use('/api/post/', postsRouter)
+app.use('/api/user/', usersRouter)
+app.use('/api/comment/', commentsRouter)
+app.use('/api/notification/', notificationRouter)
+
+//Models
+require('./models/Comment')
+require('./models/CommentLike')
+require('./models/CommentReply')
+require('./models/CommentReplyLike')
+require('./models/Followers')
+require('./models/Following')
+require('./models/Notification')
+require('./models/Post')
+require('./models/PostLike')
+require('./models/Users')
+
+//Configs
+require('./config/passport')
 
 const PORT = process.env.PORT || 5000
 

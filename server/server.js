@@ -98,23 +98,23 @@ const userController = require('./controllers/userController')
 // 	})
 // })
 
-// app.get('/auth/reset/password/:jwt', function (req, res) {
-// 	return res.status(404).json({ message: 'go to port 3000' })
-// })
+app.get('/auth/reset/password/:jwt', function (req, res) {
+	return res.status(404).json({ message: 'go to port 3000' })
+})
 
-// app.use((req, res, next) => {
-// 	next(createError(404))
-// })
+app.use((req, res, next) => {
+	next(createError(404))
+})
 
-// app.use((err, req, res, next) => {
-// 	console.log(err)
-// 	res.status(err.status || 500)
-// 	res.json({
-// 		error: {
-// 			message: err.message,
-// 		},
-// 	})
-// })
+app.use((err, req, res, next) => {
+	console.log(err)
+	res.status(err.status || 500)
+	res.json({
+		error: {
+			message: err.message,
+		},
+	})
+})
 
 // Make the Server display Client.
 // app.get('*', (req, res, next) => {
