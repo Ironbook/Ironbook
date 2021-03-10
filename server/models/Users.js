@@ -45,6 +45,7 @@ const UsersSchema = new mongoose.Schema({
 	},
 	username: {
 		type: String,
+		required: true,
 		minlength: 3,
 		maxlength: 30,
 		trim: true,
@@ -112,5 +113,4 @@ UsersSchema.methods.toAuthJSON = function () {
 	}
 }
 
-const User = mongoose.model("Users", UsersSchema);
-module.exports = User;
+module.exports = mongoose.model('Users', UsersSchema)

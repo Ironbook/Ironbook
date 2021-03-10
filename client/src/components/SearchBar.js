@@ -18,6 +18,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import green from '@material-ui/core/colors/blue';
 import logo from '../images/logo.svg';
 import { Link } from 'react-router-dom';
+import PostAddIcon from '@material-ui/icons/PostAdd';
 
 const theme = createMuiTheme({
 	palette: {
@@ -125,10 +126,10 @@ export default function PrimarySearchAppBar() {
 			open={isMenuOpen}
 			onClose={handleMenuClose}
 		>
-			<MenuItem onClick={handleMenuClose}>Messages</MenuItem>
-			<MenuItem onClick={handleMenuClose}>My account</MenuItem>
-			<MenuItem onClick={handleMenuClose}>Messages</MenuItem>
-			<MenuItem onClick={handleMenuClose}>Messages</MenuItem>
+			<Link to='./profile' style={{ color: '#1F2433', textDecoration: 'none' }}>
+				<MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+			</Link>
+			<MenuItem onClick={handleMenuClose}>Sign Out</MenuItem>
 		</Menu>
 	);
 
@@ -143,7 +144,7 @@ export default function PrimarySearchAppBar() {
 			open={isMobileMenuOpen}
 			onClose={handleMobileMenuClose}
 		>
-			<Link to='/messages'>
+			<Link style={{ color: '#1F2433', textDecoration: 'none' }} to='/messages'>
 				<MenuItem>
 					<IconButton aria-label='show 4 new mails' color='inherit'>
 						<Badge badgeContent={4} color='secondary'>
@@ -154,7 +155,10 @@ export default function PrimarySearchAppBar() {
 				</MenuItem>
 			</Link>
 
-			<Link to='/notifications'>
+			<Link
+				style={{ color: '#1F2433', textDecoration: 'none' }}
+				to='/notifications'
+			>
 				<MenuItem>
 					<IconButton aria-label='show 11 new notifications' color='inherit'>
 						<Badge badgeContent={11} color='secondary'>
@@ -164,7 +168,7 @@ export default function PrimarySearchAppBar() {
 					<p>Notifications</p>
 				</MenuItem>
 			</Link>
-			<Link to='/profile'>
+			<Link style={{ color: '#1F2433', textDecoration: 'none' }} to='/profile'>
 				<MenuItem>
 					<IconButton
 						aria-label='account of current user'
@@ -220,13 +224,22 @@ export default function PrimarySearchAppBar() {
 					</div>
 					<div className={classes.grow} />
 					<div className={classes.sectionDesktop}>
+						<Link to='./newpost'>
+							<PostAddIcon
+								style={{
+									color: '#1F2433',
+									marginTop: '11px',
+									marginRight: '10px',
+								}}
+							/>
+						</Link>
 						<Link to='/messages'>
 							<IconButton
 								style={{ color: '#1F2433' }}
 								aria-label='show 4 new mails'
 								color='inherit'
 							>
-								<Badge badgeContent={10} color='secondary'>
+								<Badge badgeContent={0} color='secondary'>
 									<MailIcon />
 								</Badge>
 							</IconButton>
@@ -237,7 +250,7 @@ export default function PrimarySearchAppBar() {
 								aria-label='show 17 new notifications'
 								color='inherit'
 							>
-								<Badge badgeContent={10} color='secondary'>
+								<Badge badgeContent={0} color='secondary'>
 									<NotificationsIcon />
 								</Badge>
 							</IconButton>
@@ -261,6 +274,7 @@ export default function PrimarySearchAppBar() {
 							onClick={handleMobileMenuOpen}
 							color='inherit'
 						>
+							{' '}
 							<MoreIcon />
 						</IconButton>
 					</div>

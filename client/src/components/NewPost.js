@@ -14,8 +14,8 @@ import { makeStyles, withTheme } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import logo from '../images/logo.svg'
 import { Switch } from 'react-router'
-import { userActions } from '../actions/userActions'
-import { userService } from '../services/userService'
+import SearchBar from './SearchBar'
+import { postService } from '../services/postService'
 
 function Copyright() {
 	return (
@@ -50,40 +50,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 }))
 
-export default function SignIn() {
+const NewPost = () => {
 	const classes = useStyles()
-
-	const [firstName, setFirstName] = useState('')
-	const [lastName, setLastName] = useState('')
-	const [userName, setUserName] = useState('')
-	const [email, setEmail] = useState('')
-	const [password, setPassword] = useState('')
-	const [retypePassword, setRetypePassword] = useState('')
-
-	const clickSubmit = (e) => {
-		e.preventDefault()
-		const user = {
-			firstName: firstName || undefined,
-			lastName: lastName || undefined,
-			username: userName || undefined,
-			email: email || undefined,
-			password: password || undefined,
-			retypepassword: retypePassword || undefined,
-		}
-		console.log(user)
-		userService
-			.register(user)
-
-			.then((data) => {
-				console.log(data)
-				// if (data.error) {
-				// 	setValues({ ...values, error: data.error })
-				// } else {
-				// 	setValues({ ...values, error: '', open: true })
-				// }
-			})
-			.catch(console.error)
-	}
 
 	return (
 		<div className='flexBox'>
@@ -92,9 +60,6 @@ export default function SignIn() {
 					<CssBaseline />
 					<div className={classes.paper}>
 						<img src={logo} />
-						{/* <Avatar className={classes.avatar}>
-							<LockOutlinedIcon />
-						</Avatar> */}
 						<Typography component='h1' variant='h5'>
 							<h1
 								style={{
@@ -131,66 +96,6 @@ export default function SignIn() {
 								onChange={(e) => setLastName(e.target.value)}
 								autoFocus
 							/>
-							<TextField
-								variant='outlined'
-								margin='normal'
-								required
-								fullWidth
-								id='username'
-								label='User Name'
-								name='User Name'
-								autoComplete='User Name'
-								onChange={(e) => setUserName(e.target.value)}
-								autoFocus
-							/>
-							<TextField
-								variant='outlined'
-								margin='normal'
-								required
-								fullWidth
-								id='email'
-								label='Email Address'
-								name='email'
-								autoComplete='email'
-								onChange={(e) => setEmail(e.target.value)}
-								autoFocus
-							/>
-							<TextField
-								variant='outlined'
-								margin='normal'
-								required
-								fullWidth
-								name='password'
-								label='Password'
-								type='password'
-								id='password'
-								autoComplete='current-password'
-								onChange={(e) => setPassword(e.target.value)}
-							/>
-							<TextField
-								variant='outlined'
-								margin='normal'
-								required
-								fullWidth
-								name='retype password'
-								label='Retype Password'
-								type='password'
-								id='password'
-								autoComplete='retype-password'
-								onChange={(e) => setRetypePassword(e.target.value)}
-							/>
-							<FormControlLabel
-								style={{ color: '#7F8390' }}
-								control={
-									<Checkbox
-										style={{ color: '#2DC5FA' }}
-										value='remember'
-										color='primary'
-									/>
-								}
-								label='Remember me'
-							/>
-
 							<Button
 								style={{ backgroundColor: '#2DC5FA' }}
 								type='submit'
@@ -222,3 +127,4 @@ export default function SignIn() {
 		</div>
 	)
 }
+export default NewPost

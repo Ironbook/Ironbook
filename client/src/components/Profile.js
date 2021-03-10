@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import actions from '../api';
+import SearchBar from './SearchBar';
 
 function Profile(props) {
 	const [user, setUser] = useState({
@@ -20,8 +21,11 @@ function Profile(props) {
 
 	return (
 		<div>
-			<div>{user.userName}</div>
-			<img src={user.profilePicture} />
+			<SearchBar />
+			<div className='profileBox'>
+				<div>{user.userName}</div>
+				<img src={user.profilePicture} />
+			</div>
 		</div>
 	);
 }

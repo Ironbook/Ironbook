@@ -6,8 +6,8 @@ client/node_modules
 .env
 server/.env
 client/.env
-
-server/tests
+client/build
+server/test
 
 **/.env
 **/.DS_Store
