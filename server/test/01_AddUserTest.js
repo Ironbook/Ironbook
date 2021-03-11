@@ -11,7 +11,7 @@ let server, agent
 
 beforeEach(async () => {
 	await dbHandler.clearDatabase()
-	await populate()
+	await populate(getUser(1))
 })
 
 beforeEach((done) => {
@@ -24,7 +24,10 @@ beforeEach((done) => {
 
 afterEach((done) => server.close(done))
 
-after(() => dbHandler.closeDatabase())
+after(async () => {
+	await dbHandler.clearDatabase()
+	await dbHandler.closeDatabase()
+})
 
 describe('/api/users/signup', () => {
 	it('should create user', (done) => {

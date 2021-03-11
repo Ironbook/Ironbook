@@ -4,7 +4,7 @@ mongoose.Promise = global.Promise
 const FollowerSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'User',
+		ref: 'Users',
 		required: true,
 	},
 	followers: [
@@ -12,7 +12,7 @@ const FollowerSchema = new mongoose.Schema({
 			user: {
 				type: mongoose.Schema.ObjectId,
 				required: true,
-				ref: 'User',
+				ref: 'Users',
 			},
 		},
 	],

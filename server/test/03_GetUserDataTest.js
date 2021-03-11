@@ -4,17 +4,19 @@ const jwt = require('jsonwebtoken')
 const { app } = require('../server')
 const { getUser, populate } = require('./data/users')
 const User = require('../models/Users')
+const dbHandler = require('./db-handler')
 
 describe('/api/users/getUserData', () => {
 	let tokenJWT
 	before(async () => {
-		await populate()
+		await dbHandler.clearDatabase()
+		await populate(getUser(0))
+		await populate(getUser(1))
 		const { username, email } = getUser(1)
-		const { _id } = await User.findOne({ email }).select('_id')
 		const token = jwt.sign(
 			{
 				email: email,
-				userId: _id,
+				userId: await User.findOne({ email }).select('_id'),
 				username: username,
 			},
 			process.env.JWT_KEY,

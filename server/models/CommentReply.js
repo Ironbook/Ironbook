@@ -6,7 +6,7 @@ const replySchema = new mongoose.Schema({
 	author: {
 		type: mongoose.Schema.ObjectId,
 		required: true,
-		ref: 'User',
+		ref: 'Users',
 	},
 	commentAt: {
 		type: mongoose.Schema.ObjectId,

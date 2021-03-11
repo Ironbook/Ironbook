@@ -1,9 +1,9 @@
 require('dotenv').config()
+const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const errorHandler = require('errorhandler')
 const express = require('express')
-const mongoose = require('mongoose')
 const path = require('path')
 const session = require('express-session')
 
