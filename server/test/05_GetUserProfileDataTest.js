@@ -4,11 +4,14 @@ const jwt = require('jsonwebtoken')
 const { app } = require('../server')
 const { getUser, populate } = require('./data/users')
 const User = require('../models/Users')
+const dbHandler = require('./db-handler')
 
 describe('/api/users/getUserProfileData', () => {
 	let tokenJWT
 	before(async () => {
-		await populate()
+		await dbHandler.clearDatabase()
+		await populate(getUser(1))
+		await populate(getUser(0))
 		const { username, email } = getUser(1)
 		const { _id } = await User.findOne({ email }).select('_id')
 		const token = jwt.sign(
@@ -24,16 +27,13 @@ describe('/api/users/getUserProfileData', () => {
 	})
 
 	it('should return data if jwt is passed and profilePage parameters is true', (done) => {
-		const user = {
-			...getUser(1),
-		}
 		request(app)
 			.post('/api/users/getProfilePageData')
 			.set('Authorization', tokenJWT)
-			.send({ profilePage: true, username: user.username })
+			.send({ profilePage: true, username: getUser(0).username })
 			.expect(200)
 			.then((res) => {
-				expect(res.body.user).to.have.all.keys(
+				expect(res.body).to.have.all.keys(
 					'_id',
 					'bio',
 					'firstName',
@@ -50,9 +50,7 @@ describe('/api/users/getUserProfileData', () => {
 			.catch((err) => done(err))
 	})
 	it('should return if user requests its profile', (done) => {
-		const user = {
-			...getUser(0),
-		}
+		const user = getUser(1)
 		request(app)
 			.post('/api/users/getProfilePageData')
 			.set('Authorization', tokenJWT)

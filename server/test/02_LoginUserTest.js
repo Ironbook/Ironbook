@@ -6,7 +6,7 @@ const { getUser } = require('./data/users')
 describe('/api/users/login', () => {
 	it('should get jwt if correct credentials are passed', (done) => {
 		const user = {
-			...getUser(0),
+			...getUser(1),
 		}
 		request(app)
 			.post('/api/users/login')

@@ -7,7 +7,7 @@
     "start": "node app.js",
     "dev": "DEBUG=backend:* nodemon app.js",
     "dev-windows": "nodemon app.js",
-    "test": "MONGO_URI=mongodb://localhost ./node_modules/.bin/mocha --exit -R min ./test/*.js"
+    "test": "./node_modules/.bin/mocha --exit -R min ./test/*.js"
   },
   "keywords": [],
   "author": "",

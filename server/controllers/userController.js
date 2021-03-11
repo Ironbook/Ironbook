@@ -312,7 +312,6 @@ exports.sendVerificationEmail = (req, res) => {
 }
 
 exports.sendforgotPasswordEmail = (req, res) => {
-	console.log(req.body)
 	User.findOne({ email: req.body.email })
 		.select('email username')
 		.then((user) => {
@@ -328,7 +327,10 @@ exports.loginUser = (req, res, next) => {
 	User.aggregate([
 		{
 			$match: {
-				$or: [{ email: req.body.email }, { username: req.body.username }],
+				$or: [
+					{ email: req.body.email },
+					{ username: req.body.username },
+				],
 			},
 		},
 		{
@@ -551,10 +553,15 @@ exports.getUserData = (req, res, next) => {
 		author: mongoose.Types.ObjectId(req.userData.userId),
 	}).countDocuments()
 
-	const messages = Message.find({
-		receiver: mongoose.Types.ObjectId(req.userData.userId),
-		read: false,
-	}).countDocuments()
+	let messages = 0
+	try {
+		messages = Message.find({
+			receiver: mongoose.Types.ObjectId(req.userData.userId),
+			read: false,
+		}).countDocuments()
+	} catch (err) {
+		console.log('Error loading messages:', err)
+	}
 
 	const user = User.aggregate(q)
 
@@ -926,7 +933,9 @@ exports.getUserProfileFollowers = (req, res) => {
 		.then((users) => {
 			return res.status(200).json({ users })
 		})
-		.catch((err) => res.status(500).json({ message: err.message }))
+		.catch((err) => {
+			res.status(500).json({ message: err.message })
+		})
 }
 
 exports.getUserProfileFollowings = (req, res) => {
