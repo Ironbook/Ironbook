@@ -65,11 +65,6 @@ const UsersSchema = new mongoose.Schema({
 		type: String,
 		default: 'person.png',
 	},
-	password: {
-		type: String,
-		trim: true,
-		match: /^([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)$/,
-	},
 	userClass: {
 		type: String,
 		default: 'member',
