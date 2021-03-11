@@ -3,7 +3,7 @@ const request = require('supertest')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const { app } = require('../server')
-const { getUser } = require('./data/users')
+const { getUser, populate } = require('./data/users')
 const User = require('../models/Users')
 const Following = require('../models/Following')
 const Followers = require('../models/Followers')
@@ -14,19 +14,27 @@ describe('/api/users/getUserProfileData', () => {
 	let tokenJWT, userId, userId1
 	before(async () => {
 		await populate()
+		const { username, email, _id: userId } = await new User(
+			getUser(0)
+		).save()
 		const { username, email } = getUser(1)
-		const { _id1 } = await User.findOne({ email }).select('_id')
-		const { _id } = await new User(getUser(0)).save()
+		const {
+			_id: userId1,
+			username: username1,
+			email: email1,
+		} = await User.findOne({ email })
 		const token = jwt.sign(
-			{
-				email: email,
-				userId: _id,
-				username: username,
-			},
+			{ email, userId, username },
+			process.env.JWT_KEY,
+			{ expiresIn: '30m' }
+		)
+		const token1 = jwt.sign(
+			{ email: email1, userId: userId1, username: username1 },
 			process.env.JWT_KEY,
 			{ expiresIn: '30m' }
 		)
 		tokenJWT = 'Bearer ' + token
+		tokenJWT1 = 'Bearer ' + token1
 		userId = _id
 		userId1 = _id1
 	})
@@ -48,7 +56,7 @@ describe('/api/users/getUserProfileData', () => {
 		request(app)
 			.post('/api/users/followUser')
 			.set('Authorization', tokenJWT)
-			.send({ userId: userId1 })
+			.send({ userId })
 			.expect(403)
 			.then((res) => {
 				expect(res.body).to.have.all.keys('message')
@@ -74,9 +82,7 @@ describe('/api/users/getUserProfileData', () => {
 		)
 	})
 	it('should get followers of user 1', (done) => {
-		const user = {
-			...getUser(0),
-		}
+		const { username } = getUser(0)
 		request(app)
 			.post('/api/users/getUserProfileFollowers')
 			.set('Authorization', tokenJWT)
@@ -85,16 +91,14 @@ describe('/api/users/getUserProfileData', () => {
 			.then((res) => {
 				expect(res.body.users[0].followers).to.have.lengthOf(1)
 				expect(res.body.users[0].followers[0].user.username).to.equal(
-					user.username
+					username
 				)
 				done()
 			})
 			.catch((err) => done(err))
 	})
+
 	it('should get followings of user 1', (done) => {
-		const user = {
-			...getUser(0),
-		}
 		request(app)
 			.post('/api/users/getUserProfileFollowings')
 			.set('Authorization', tokenJWT)
@@ -106,10 +110,8 @@ describe('/api/users/getUserProfileData', () => {
 			})
 			.catch((err) => done(err))
 	})
+
 	it('should get followers of user 2', (done) => {
-		const user = {
-			...getUser(0),
-		}
 		request(app)
 			.post('/api/users/getUserProfileFollowers')
 			.set('Authorization', tokenJWT)
@@ -121,6 +123,7 @@ describe('/api/users/getUserProfileData', () => {
 			})
 			.catch((err) => done(err))
 	})
+	
 	it('should get followings of user 2', (done) => {
 		const user = {
 			...getUser(1),
