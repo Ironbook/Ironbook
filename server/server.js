@@ -20,6 +20,7 @@ mongoose.promise = global.Promise
 
 // Initiate Server (app)
 const app = express()
+const io = socket_io()
 const isProduction = process.env.NODE_ENV === 'production'
 
 // Customise the app
