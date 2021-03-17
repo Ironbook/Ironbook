@@ -2,11 +2,11 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "DEBUG=backend:* nodemon app.js",
-    "dev-windows": "nodemon app.js",
+    "start": "node server.js",
+    "dev": "DEBUG=backend:* nodemon server.js",
+    "dev-windows": "nodemon server.js",
     "test": "./node_modules/.bin/mocha --exit -R min ./test/*.js"
   },
   "keywords": [],

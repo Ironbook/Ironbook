@@ -7,7 +7,7 @@ client/node_modules
 server/.env
 client/.env
 client/build
-server/test
+
 
 **/.env
 **/.DS_Store

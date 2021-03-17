@@ -49,7 +49,7 @@ if (!isProduction) {
 	app.use(errorHandler())
 }
 
-// Lets get that DATA!
+// DATA DATA DATA
 mongoose
 	.connect(MONGO_URI, {
 		useNewUrlParser: true,
@@ -123,22 +123,17 @@ io.use((socket, next) => {
 	})
 })
 
-// const limiter = rateLimit({
-// 	windowMs: 15 * 60 * 1000, // 15 min
-// 	max: 200, //  IP limit to 200 requests
-// })
-
-// app.use(helmet())
-// if (process.env.NODE_ENV === 'production') {
-// 	app.use(limiter)
-// 	app.use(
-// 		logger('common', {
-// 			stream: fs.createWriteStream('./access.log', { flags: 'a' }),
-// 		})
-// 	)
-// } else {
-// 	app.use(logger('dev'))
-// }
+app.use(helmet())
+if (process.env.NODE_ENV === 'production') {
+	app.use(limiter)
+	app.use(
+		logger('common', {
+			stream: fs.createWriteStream('./access.log', { flags: 'a' }),
+		})
+	)
+} else {
+	app.use(logger('dev'))
+}
 
 app.get('/auth/reset/password/:jwt', function (req, res) {
 	return res.status(404).json({ message: 'go to port 3000' })
@@ -149,8 +144,9 @@ app.get('*', (req, res, next) => {
 	console.log('Hello from the build')
 })
 
-console.log('Hello from the end of the server')
 if (process.env.NODE_ENV !== 'test') {
 	app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`))
 }
 module.exports = { app }
+
+console.log('Hello from the end of the server')
