@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
-const ChatRoom = mongoose.model('ChatRoom')
-const Message = mongoose.model('Message')
-const User = mongoose.model('User')
+const ChatRoom = require('../models/ChatRoom')
+const Message = require('../models/Message')
+const User = require('../models/Users')
 const messageHandler = require('../handlers/messageHandler')
 const path = require('path')
 const uuidv4 = require('uuid/v4')
@@ -9,9 +9,7 @@ const multer = require('multer')
 
 function checkFileType(file, cb) {
 	const filetypes = /jpeg|jpg|png|gif/
-	const extname = filetypes.test(
-		path.extname(file.originalname).toLowerCase()
-	)
+	const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
 	const mimetype = filetypes.test(file.mimetype)
 	if (mimetype && extname) {
 		return cb(null, true)

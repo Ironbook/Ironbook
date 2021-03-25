@@ -7,11 +7,10 @@ const Notification = require('../models/Notification')
 const Comment = require('../models/Comment')
 const Jimp = require('jimp')
 const path = require('path')
-const uuidv4 = require('uuid')
+const uuidv4 = require('uuid/v4')
 const multer = require('multer')
 const notificationHandler = require('../handlers/notificationHandler')
 const linkify = require('linkifyjs')
-
 require('linkifyjs/plugins/hashtag')(linkify)
 require('linkifyjs/plugins/mention')(linkify)
 
@@ -42,7 +41,6 @@ const postLookup = [
 	},
 ]
 
-// This is for picture uploads
 function checkFileType(file, cb) {
 	const filetypes = /jpeg|jpg|png|gif/
 	const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
@@ -61,7 +59,6 @@ function arrayRemove(array, value) {
 }
 
 const storage = multer.diskStorage({
-	// Disk storage settings
 	destination: (req, file, cb) => {
 		cb(null, './public/images/post-images/')
 	},
@@ -72,7 +69,6 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({
-	// Settings
 	storage: storage,
 	fileFilter: function (req, file, cb) {
 		checkFileType(file, cb)
@@ -183,7 +179,6 @@ exports.getPosts = (req, res) => {
 			},
 		]
 	}
-
 	Post.aggregate(query)
 		.then((data) => {
 			if (req.body.initialFetch && !data[0].total.length) {
@@ -281,7 +276,6 @@ exports.getPostsByHashtag = (req, res) => {
 			},
 		]
 	}
-
 	Post.aggregate(query)
 		.then((data) => {
 			const { posts } = data[0]
@@ -423,7 +417,7 @@ exports.getPost = (req, res) => {
 }
 
 exports.createPost = (req, res) => {
-	const hashtags = linkify // find hashtags
+	const hashtags = linkify
 		.find(req.body.description)
 		.filter((link) => {
 			if (link.type === 'hashtag') {
@@ -431,7 +425,6 @@ exports.createPost = (req, res) => {
 			}
 		})
 		.map((hashtag) => hashtag.value.substring(1))
-
 	const mentions = linkify
 		.find(req.body.description)
 		.filter((link) => {
@@ -440,11 +433,8 @@ exports.createPost = (req, res) => {
 			}
 		})
 		.map((hashtag) => hashtag.value.substring(1))
-
 	const tags = JSON.parse(req.body.tags).map((tag) => tag.value)
-
 	const uniqueUsernames = [...new Set([...mentions, ...tags])]
-
 	let newPost
 	if (req.body.coordinates) {
 		const coordinates = req.body.coordinates
@@ -471,7 +461,6 @@ exports.createPost = (req, res) => {
 			tags: JSON.parse(req.body.tags),
 		})
 	}
-
 	newPost
 		.save()
 		.then((post) => {
@@ -510,7 +499,6 @@ exports.createPost = (req, res) => {
 							})
 					}
 				})
-
 			new PostLike({ post: post._id }).save().then(() => {
 				const data = {
 					...post.toObject(),
@@ -537,7 +525,6 @@ function deletePostPhoto({ photo }) {
 		}
 		console.log('removed')
 	})
-
 	fs.unlink('./public/images/post-images/thumbnail/' + photo, (err) => {
 		if (err) {
 			console.error(err)
@@ -599,6 +586,7 @@ exports.likePost = (req, res) => {
 				{ $push: { postLikes: { post: req.body.postId } } },
 				{ new: true, upsert: true }
 			).select('profilePicture username')
+
 			Promise.all([user, notification])
 				.then((values) => {
 					notificationHandler.sendLikePostNotification(req, values)

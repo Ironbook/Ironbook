@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Notification = mongoose.model('Notification')
+const Notification = require('../models/Notification')
 
 exports.readNotifications = (req, res) => {
 	Notification.updateMany(
@@ -18,7 +18,6 @@ exports.readNotifications = (req, res) => {
 
 exports.getNotifications = (req, res) => {
 	let query
-
 	if (req.body.initialFetch) {
 		query = [
 			{
@@ -155,26 +154,13 @@ exports.getNotifications = (req, res) => {
 			},
 		]
 	}
-
 	Notification.aggregate(query)
 		.then((data) => {
 			if (req.body.initialFetch && !data[0].total.length) {
-				data[0].total.push({ _id: null, count: 0 }) //if user has no posts
+				data[0].total.push({ _id: null, count: 0 })
 			}
-
 			res.status(200).json({ data })
 		})
-		.catch((err) => {
-			console.log(err.message)
-			res.status(500).json({ message: err.message })
-		})
-
-	Notification.find(query)
-		.populate('sender', 'username profilePicture')
-		.select('-receiver')
-		.sort({ createdAt: -1 })
-		.limit(5)
-		.then((response) => res.status(200).json({ notifications: response }))
 		.catch((err) => {
 			console.log(err.message)
 			res.status(500).json({ message: err.message })
