@@ -7,7 +7,7 @@ const Notification = require('../models/Notification')
 const Comment = require('../models/Comment')
 const Jimp = require('jimp')
 const path = require('path')
-const uuidv4 = require('uuid/v4')
+const uuid = require('uuid')
 const multer = require('multer')
 const notificationHandler = require('../handlers/notificationHandler')
 const linkify = require('linkifyjs')
@@ -64,7 +64,7 @@ const storage = multer.diskStorage({
 	},
 	filename: (req, file, cb) => {
 		const ext = file.mimetype.split('/')[1]
-		cb(null, uuidv4() + '.' + ext)
+		cb(null, uuid() + '.' + ext)
 	},
 })
 

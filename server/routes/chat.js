@@ -2,8 +2,8 @@ const express = require('express')
 const router = express.Router()
 const chatController = require('../controllers/chatController')
 const checkAuth = require('../middleware/checkAuth')
-const chatValidator = require('../middleware/schemaValidators/chatValidator')
-const chechRoom = require('../middleware/checkRoom')
+const chatValidator = require('../middleware/validators/chatValidator')
+const checkRoom = require('../middleware/checkRoom')
 
 router.post('/getChatRooms/', checkAuth, chatController.getChatRooms)
 
@@ -19,7 +19,7 @@ router.post(
 	checkAuth,
 	chatController.upload,
 	chatValidator.sendImage,
-	chechRoom,
+	checkRoom,
 	chatController.createImageMessage
 )
 
@@ -27,7 +27,7 @@ router.post(
 	'/call',
 	checkAuth,
 	chatValidator.handleCall,
-	chechRoom,
+	checkRoom,
 	chatController.handleCall
 )
 
@@ -35,7 +35,7 @@ router.post(
 	'/answer',
 	checkAuth,
 	chatValidator.answer,
-	chechRoom,
+	checkRoom,
 	chatController.answer
 )
 
@@ -43,7 +43,7 @@ router.post(
 	'/sendMessage',
 	checkAuth,
 	chatValidator.sendMessage,
-	chechRoom,
+	checkRoom,
 	chatController.sendMessage
 )
 
@@ -51,7 +51,7 @@ router.post(
 	'/readMessages',
 	checkAuth,
 	chatValidator.readMessages,
-	chechRoom,
+	checkRoom,
 	chatController.readMessages
 )
 

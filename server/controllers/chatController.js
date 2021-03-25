@@ -4,7 +4,7 @@ const Message = require('../models/Message')
 const User = require('../models/Users')
 const messageHandler = require('../handlers/messageHandler')
 const path = require('path')
-const uuidv4 = require('uuid/v4')
+const uuid = require('uuid')
 const multer = require('multer')
 
 function checkFileType(file, cb) {
@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 	},
 	filename: (req, file, cb) => {
 		const ext = file.mimetype.split('/')[1]
-		cb(null, uuidv4() + '.' + ext)
+		cb(null, uuid() + '.' + ext)
 	},
 })
 

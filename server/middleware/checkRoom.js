@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const ChatRoom = mongoose.model('ChatRoom')
+const ChatRoom = require('../models/ChatRoom')
 
 module.exports = (req, res, next) => {
 	ChatRoom.find({
