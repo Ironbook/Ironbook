@@ -1,111 +1,135 @@
-require('dotenv').config()
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const errorHandler = require('errorhandler')
+const createError = require('http-errors')
 const express = require('express')
-const mongoose = require('mongoose')
+const rateLimit = require('express-rate-limit')
+const helmet = require('helmet')
+const socket_io = require('socket.io')
+const jwt = require('jsonwebtoken')
 const path = require('path')
-const session = require('express-session')
+const logger = require('morgan')
+const mongoose = require('mongoose')
+const fs = require('fs')
+require('dotenv').config()
 
-console.log('Hello from the start of the server')
-// Set-up Mongo
-const MONGO_URI = process.env.MONGO_URI
-const PORT = process.env.PORT || 5000
-mongoose.promise = global.Promise
-
-// Initiate Server (app)
-const app = express()
-const isProduction = process.env.NODE_ENV === 'production'
-
-// Customise the app
-app.use(
-	cors({
-		credentials: true,
-		origin: ['http://localhost:3000'], //Swap this with the client url
-	})
-)
-app.use(require('morgan')('dev'))
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
-// app.use(express.static(path.join(__dirname, '../client/public')))
-
-// We need to secure this on production.
-app.use(
-	session({
-		secret: process.env.SECRET,
-		cookie: { maxAge: 60000 },
-		resave: false,
-		saveUninitialized: false,
-	})
-)
-
-if (!isProduction) {
-	app.use(errorHandler())
-}
-
-// Lets get that DATA!
+// connect to DB
+const MONGO = process.env.DATABASE
 mongoose
-	.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+	.connect(MONGO, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		useCreateIndex: true,
+		useFindAndModify: false,
+	})
 	.then((x) =>
 		console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
 	)
 	.catch((err) => console.error('Error connecting to mongo', err))
 
-// Add our Models and Routes
-// app.use(require('./routes'))
+mongoose.Promise = global.Promise
+mongoose.connection.on('error', (err) => {
+	console.error(err.message)
+})
+
+mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true)
+mongoose.set('autoIndex', false)
+
+require('./models/Post')
+require('./models/Users')
+require('./models/Comment')
+require('./models/CommentReply')
+require('./models/CommentReplyLike')
+require('./models/CommentLike')
+require('./models/PostLike')
+require('./models/Following')
+require('./models/Followers')
+require('./models/Notification')
+require('./models/ChatRoom')
+require('./models/Message')
+
+const app = express()
+const io = socket_io()
+
+const userController = require('./controllers/userController')
+
+app.io = io
+
+app.set('socketio', io)
+
+io.use((socket, next) => {
+	if (socket.handshake.query && socket.handshake.query.token) {
+		const token = socket.handshake.query.token.split(' ')[1]
+		jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
+			if (err) return next(new Error('Authentication error'))
+			socket.userData = decoded
+			next()
+		})
+	} else {
+		next(new Error('Authentication error'))
+	}
+}).on('connection', (socket) => {
+	// Connection now authenticated to receive further events
+	socket.join(socket.userData.userId)
+	io.in(socket.userData.userId).clients((err, clients) => {
+		userController.changeStatus(socket.userData.userId, clients, io)
+	})
+	socket.on('typing', (data) => {
+		socket.to(data.userId).emit('typing', { roomId: data.roomId })
+	})
+	socket.on('stoppedTyping', (data) => {
+		socket.to(data.userId).emit('stoppedTyping', { roomId: data.roomId })
+	})
+	socket.on('disconnect', () => {
+		socket.leave(socket.userData.userId)
+		io.in(socket.userData.userId).clients((err, clients) => {
+			userController.changeStatus(socket.userData.userId, clients, io)
+		})
+	})
+})
+
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	max: 200,
+})
+
 const postsRouter = require('./routes/post')
 const usersRouter = require('./routes/users')
 const commentsRouter = require('./routes/comment')
 const notificationRouter = require('./routes/notification')
+const chatRouter = require('./routes/chat')
 
-require('./models/Comment')
-require('./models/CommentLike')
-require('./models/CommentReply')
-require('./models/CommentReplyLike')
-require('./models/Followers')
-require('./models/Following')
-require('./models/Notification')
-require('./models/Post')
-require('./models/PostLike')
-require('./models/Users')
-require('./config/passport')
+app.use(helmet())
+
+if (process.env.NODE_ENV === 'production') {
+	app.use(limiter)
+	app.use(
+		logger('common', {
+			stream: fs.createWriteStream('./access.log', { flags: 'a' }),
+		})
+	)
+} else {
+	app.use(logger('dev'))
+}
+app.use(express.static('public'))
+app.get('*', (req, res) => {
+	res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
+})
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 app.use('/api/post/', postsRouter)
-app.use('/api/users/', usersRouter)
+app.use('/api/user/', usersRouter)
 app.use('/api/comment/', commentsRouter)
 app.use('/api/notification/', notificationRouter)
-
-const userController = require('./controllers/userController')
-// Errors and Middleware
-// if (!isProduction) {
-// 	app.use((err, req, res) => {
-// 		res.status(err.status || 500)
-// 		res.json({
-// 			errors: {
-// 				message: err.message,
-// 				error: err,
-// 			},
-// 		})
-// 	})
-// }
-
-// app.use((err, req, res) => {
-// 	res.status(err.status || 500)
-// 	res.json({
-// 		errors: {
-// 			message: err.message,
-// 			error: {},
-// 		},
-// 	})
-// })
-
+app.use('/api/chat/', chatRouter)
 app.get('/auth/reset/password/:jwt', function (req, res) {
 	return res.status(404).json({ message: 'go to port 3000' })
 })
 
+// catch 404 and forward to error handler
 app.use((req, res, next) => {
 	next(createError(404))
 })
 
+// error handler
 app.use((err, req, res, next) => {
 	console.log(err)
 	res.status(err.status || 500)
@@ -116,13 +140,4 @@ app.use((err, req, res, next) => {
 	})
 })
 
-// Make the Server display Client.
-// app.get('*', (req, res, next) => {
-// 	res.sendFile(path.join(__dirname, '../client/public/index.html'))
-// })
-app.get('*', (req, res, next) => {
-	res.sendFile(path.join(__dirname, '../client/build/index.html'))
-	console.log('Hello from the build')
-})
-console.log('Hello from the end of the server')
-app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`))
+module.exports = app

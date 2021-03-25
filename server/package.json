@@ -2,11 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "DEBUG=backend:* nodemon app.js",
-    "dev-windows": "nodemon app.js"
+    "start": "node server.js",
+    "dev": "DEBUG=backend:* nodemon server.js",
+    "dev-windows": "nodemon server.js",
+    "test": "./node_modules/.bin/mocha --exit -R min ./test/*.js"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,11 @@
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
+    "express-rate-limit": "^5.2.6",
     "express-session": "^1.17.1",
+    "fs": "0.0.1-security",
+    "helmet": "^4.4.1",
+    "http-errors": "^1.8.0",
     "install": "^0.13.0",
     "jimp": "^0.16.1",
     "joi": "^17.4.0",

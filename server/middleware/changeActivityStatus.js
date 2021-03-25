@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const User = mongoose.model('User')
-const Followers = mongoose.model('Follower')
+const User = require('../models/Users')
+const Followers = require('../models/Follower')
 const messageHandler = require('../handlers/messageHandler')
 
 module.exports = (req, res, next) => {

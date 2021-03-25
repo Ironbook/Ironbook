@@ -17,7 +17,7 @@ const postSchema = new mongoose.Schema({
 	},
 	author: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'User',
+		ref: 'Users',
 		required: true,
 	},
 	hashtags: {

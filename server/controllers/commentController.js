@@ -6,7 +6,6 @@ const CommentLike = require('../models/CommentLike')
 const CommentReply = require('../models/CommentReply')
 const Notification = require('../models/Notification')
 const CommentReplyLike = require('../models/CommentReplyLike')
-
 const notificationHandler = require('../handlers/notificationHandler')
 const linkify = require('linkifyjs')
 require('linkifyjs/plugins/hashtag')(linkify)
@@ -28,11 +27,10 @@ exports.addComment = (req, res) => {
 		})
 		.map((hashtag) => hashtag.value.substring(1))
 	const uniqueUsernames = [...new Set([...mentions])]
-
 	Post.findById({ _id: req.body.postId })
 		.then((post) => {
 			if (!post) {
-				return res.status(400).json({ message: 'No post with that id' })
+				return res.status(400).json({ message: 'No post with that id.' })
 			}
 			new Comment({
 				post: post._id,
@@ -208,7 +206,7 @@ exports.getCommentsForPost = (req, res) => {
 							$expr: { $eq: ['$commentAt', '$$indicator_id'] },
 						},
 					},
-					{ $sort: { createdAt: 1 } },
+					{ $sort: { createdAt: 1 } }, // add sort if needed (for example, if you want first 100 comments by creation date)
 					{ $limit: 1 },
 				],
 			},
@@ -439,7 +437,6 @@ exports.likeComment = (req, res) => {
 			Promise.all([user, notification])
 				.then((values) => {
 					notificationHandler.sendLikeCommenNotification(req, values)
-
 					return res.status(200).json({
 						commentId: req.body.commentId,
 						postId: req.body.postId,
@@ -510,7 +507,6 @@ exports.likeCommentReply = (req, res) => {
 						return notification.toObject()
 					})
 			}
-
 			const user = User.findByIdAndUpdate(
 				req.userData.userId,
 				{ $push: { commentReplyLikes: { comment: req.body.commentId } } },
@@ -537,6 +533,7 @@ exports.likeCommentReply = (req, res) => {
 				},
 				{ new: true, upsert: true }
 			)
+
 			const user = User.findByIdAndUpdate(
 				req.userData.userId,
 				{ $pull: { commentReplyLikes: { comment: req.body.commentId } } },
@@ -565,6 +562,7 @@ exports.getCommentLikes = (req, res) => {
 			res.status(200).json({ users })
 		})
 }
+
 exports.getCommentReplyLikes = (req, res) => {
 	CommentReplyLike.find({ comment: req.body.commentId })
 		.populate('users_likes.author', 'username profilePicture')

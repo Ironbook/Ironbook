@@ -11,13 +11,17 @@ const Post = require('../models/Post')
 const Following = require('../models/Following')
 const Followers = require('../models/Followers')
 const Notification = require('../models/Notification')
+const ChatRoom = require('../models/ChatRoom')
+const Message = require('../models/Message')
 const notificationHandler = require('../handlers/notificationHandler')
 const emailHandler = require('../handlers/emailHandler')
+const messageHandler = require('../handlers/messageHandler')
 
 function checkFileType(file, cb) {
 	const filetypes = /jpeg|jpg|png|gif/
 	const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
 	const mimetype = filetypes.test(file.mimetype)
+
 	if (mimetype && extname) {
 		return cb(null, true)
 	} else {
@@ -41,7 +45,7 @@ const upload = multer({
 		checkFileType(file, cb)
 	},
 	limits: {
-		fileSize: 1000 * 1000,
+		fileSize: 1024 * 1024,
 	},
 }).single('photo')
 
@@ -54,7 +58,7 @@ exports.upload = (req, res, next) => {
 			if (err) throw err
 			test
 				.resize(100, 100)
-				.quality(60)
+				.quality(50)
 				.write('./public/images/profile-picture/100x100/' + req.body.photo)
 			next()
 		})
@@ -107,115 +111,126 @@ exports.changeProfilePicture = (req, res) => {
 
 exports.activate = (req, res) => {
 	if (process.env.ENABLE_SEND_EMAIL === 'false') {
-		return res.status(200).header('Content-Type', 'text/html').send(
-			`<!DOCTYPE html>
-			<html lang="en">    
-				<head>
-					<meta charset="UTF-8">
-					<meta http-equiv="X-UA-Compatible" content="IE=edge">
-					<meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<meta name="theme-color" content="#000000">
-					<style>
-						.alert {
-							padding: 20px;
-							background-color: #f23d3d;
-							color: #1F2433;
-						}
-						</style>
-						<title>Ironbook</title>
-				</head>    
-				<body>
-					<div class="alert">
-						<strong>Error!</strong>
-					</div>    
-				</body>    
-			</html>`
-		)
+		return res.status(200).header('Content-Type', 'text/html')
+			.send(`<!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="theme-color" content="#000000">
+        <style>
+            .alert {
+                padding: 20px;
+                background-color: #f44336;
+                color: white;
+            }
+        </style>
+        <title>social-network</title>
+    </head>
+    
+    <body>
+        <div class="alert">
+            <strong>Error!</strong> Disabled.
+        </div>
+    
+    </body>
+    
+    </html>
+  `)
 	}
-
 	try {
 		const decoded = jwt.verify(req.params.token, process.env.JWT_KEY)
 		User.findByIdAndUpdate(decoded._id, {
 			activated: true,
 		})
 			.then(() => {
-				return res.status(200).header('Content-Type', 'text/html').send(
-					`<!DOCTYPE html>
-          <html lang="en">      
-						<head>
-							<meta charset="UTF-8">
-							<meta http-equiv="X-UA-Compatible" content="IE=edge">
-							<meta name="viewport" content="width=device-width, initial-scale=1.0">
-							<meta name="theme-color" content="#000000">
-							<style>
-								.alert {
-									padding: 20px;
-									background-color: #4ead4e;
-									color: #1F2433;
-								}
-								</style>
-								<title>Ironbook</title>
-						</head>          
-						<body>
-							<div class="alert">
-								<strong>Account activated!</strong> .
-							</div>          
-						</body>          
-      		</html>`
-				)
+				return res.status(200).header('Content-Type', 'text/html')
+					.send(`<!DOCTYPE html>
+          <html lang="en">
+      
+          <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+              <meta name="theme-color" content="#000000">
+              <style>
+                  .alert {
+                      padding: 20px;
+                      background-color: #4CAF50;
+                      color: white;
+                  }
+              </style>
+              <title>social-network</title>
+          </head>
+          
+          <body>
+              <div class="alert">
+                  <strong>Success!</strong> Account activated.
+              </div>
+          
+          </body>
+          
+          </html>
+          `)
 			})
 			.catch((err) => {
 				console.log(err)
-				return res.status(401).header('Content-Type', 'text/html').send(
-					`<!DOCTYPE html>
-          	<html lang="en">          
-          		<head>
-								<meta charset="UTF-8">
-								<meta http-equiv="X-UA-Compatible" content="IE=edge">
-								<meta name="viewport" content="width=device-width, initial-scale=1.0">
-								<meta name="theme-color" content="#000000">
+				return res.status(401).header('Content-Type', 'text/html')
+					.send(`<!DOCTYPE html>
+          <html lang="en">
+          
+          <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+              <meta name="theme-color" content="#000000">
               <style>
-                .alert {
-                  padding: 20px;
-                  background-color: #f23d3d;
-                  color: #1F2433;
-                }
+                  .alert {
+                      padding: 20px;
+                      background-color: #f44336;
+                      color: white;
+                  }
               </style>
-              <title>Ironbook</title>
-          	</head>          
-          	<body>
+              <title>social-network</title>
+          </head>
+          
+          <body>
               <div class="alert">
-                <strong>Error!</strong> Something went wrong.
-              </div>          
-          	</body>          
-        	</html>`
-				)
+                  <strong>Error!</strong> Something went wrong.
+              </div>
+          
+          </body>
+          
+          </html>
+        `)
 			})
 	} catch (err) {
-		return res.status(401).header('Content-Type', 'text/html').send(
-			`<!DOCTYPE html>
-      	<html lang="en">      
-      	<head>
-					<meta charset="UTF-8">
-					<meta http-equiv="X-UA-Compatible" content="IE=edge">
-					<meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<meta name="theme-color" content="#000000">
+		return res.status(401).header('Content-Type', 'text/html')
+			.send(`<!DOCTYPE html>
+      <html lang="en">
+      
+      <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+          <meta name="theme-color" content="#000000">
           <style>
-            .alert {
-              padding: 20px;
-              background-color: #f23d3d;
-              color: #1F2433;
-            }
+              .alert {
+                  padding: 20px;
+                  background-color: #f44336;
+                  color: white;
+              }
           </style>
-          <title>Ironbook</title>
-      	</head>      
-      	<body>
+          <title>social-network</title>
+      </head>
+      
+      <body>
           <div class="alert">
-            <strong>Error!</strong> Token Invalid.
-          </div>      
-      	</body>      
-      </html>`
-		)
+              <strong>Error!</strong> Invalid token.
+          </div>
+      
+      </body>
+      
+      </html>
+    `)
 	}
 }
 
@@ -239,8 +254,12 @@ exports.addUser = (req, res) => {
 						.save()
 						.then((user) => {
 							notificationHandler.sendNewUser({ req, user })
-							const following = new Following({ user: user._id }).save()
-							const followers = new Followers({ user: user._id }).save()
+							const following = new Following({
+								user: user._id,
+							}).save()
+							const followers = new Followers({
+								user: user._id,
+							}).save()
 							Promise.all([following, followers]).then(() => {
 								if (process.env.ENABLE_SEND_EMAIL === 'true') {
 									emailHandler.sendVerificationEmail({
@@ -285,7 +304,7 @@ exports.resetPassword = (req, res) => {
 		} else {
 			User.findOneAndUpdate({ email: req.userData.email }, { password: hash })
 				.then(() => {
-					return res.status(200).json({ message: 'password reset.' })
+					return res.status(200).json({ message: 'password reseted' })
 				})
 				.catch((err) => {
 					console.log(err.message)
@@ -360,6 +379,7 @@ exports.loginUser = (req, res, next) => {
 								expiresIn: '30m',
 							}
 						)
+
 						const user = {
 							_id: users[0]._id,
 							token: 'Bearer ' + token,
@@ -396,7 +416,9 @@ exports.deleteUser = (req, res) => {
 exports.updateUser = (req, res) => {
 	User.find({
 		$and: [
-			{ $or: [{ email: req.body.email }, { username: req.body.username }] },
+			{
+				$or: [{ email: req.body.email }, { username: req.body.username }],
+			},
 			{ _id: { $ne: req.userData.userId } },
 		],
 	})
@@ -410,7 +432,6 @@ exports.updateUser = (req, res) => {
 						message: 'Username exists',
 					})
 				}
-
 				if (email === req.body.email) {
 					return res.status(409).json({
 						message: 'Email exists',
@@ -476,12 +497,18 @@ exports.getUserData = (req, res, next) => {
 					email: 1,
 					bio: 1,
 					profilePicture: 1,
-					followingIds: { $arrayElemAt: ['$followings.following.user', 0] },
+					followingIds: {
+						$arrayElemAt: ['$followings.following.user', 0],
+					},
 					followings: {
-						$size: { $arrayElemAt: ['$followings.following.user', 0] },
+						$size: {
+							$arrayElemAt: ['$followings.following.user', 0],
+						},
 					},
 					followers: {
-						$size: { $arrayElemAt: ['$followers.followers.user', 0] },
+						$size: {
+							$arrayElemAt: ['$followers.followers.user', 0],
+						},
 					},
 					postLikes: '$postLikes.post',
 					commentLikes: '$commentLikes.comment',
@@ -506,7 +533,9 @@ exports.getUserData = (req, res, next) => {
 					lastName: 1,
 					username: 1,
 					profilePicture: 1,
-					followingIds: { $arrayElemAt: ['$followings.following.user', 0] },
+					followingIds: {
+						$arrayElemAt: ['$followings.following.user', 0],
+					},
 					postLikes: '$postLikes.post',
 					commentLikes: '$commentLikes.comment',
 					commentReplyLikes: '$commentReplyLikes.comment',
@@ -514,6 +543,7 @@ exports.getUserData = (req, res, next) => {
 			},
 		]
 	}
+
 	const notification = Notification.find({
 		receiver: mongoose.Types.ObjectId(req.userData.userId),
 		read: false,
@@ -533,7 +563,6 @@ exports.getUserData = (req, res, next) => {
 	}).countDocuments()
 
 	const user = User.aggregate(q)
-
 	Promise.all([user, notification, posts, messages, allNotification])
 		.then((values) => {
 			const user = values[0]
@@ -564,6 +593,34 @@ exports.sendUserData = (req, res) => {
 }
 
 exports.followUser = (req, res) => {
+	ChatRoom.find({ members: { $all: [req.userData.userId, req.body.userId] } })
+		.then((room) => {
+			if (!room.length) {
+				new ChatRoom({
+					members: [req.body.userId, req.userData.userId],
+				})
+					.save()
+					.then((room) => {
+						room
+							.populate(
+								'members',
+								'username firstName lastName profilePicture activityStatus'
+							)
+							.execPopulate()
+							.then((room) => {
+								messageHandler.sendRoom(req, {
+									userId: req.body.userId,
+									room: room.toObject(),
+								})
+							})
+					})
+			}
+		})
+		.catch((err) => {
+			return res.status(500).json({
+				message: err.message,
+			})
+		})
 	if (req.userData.userId !== req.body.userId) {
 		Following.updateOne(
 			{
@@ -875,6 +932,7 @@ exports.searchUsersByUsername = (req, res) => {
 exports.getFollowings = (req, res, next) => {
 	User.aggregate([
 		{ $match: { _id: mongoose.Types.ObjectId(req.userData.userId) } },
+
 		{
 			$lookup: {
 				from: 'followings',
