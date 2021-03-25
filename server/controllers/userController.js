@@ -6,22 +6,20 @@ const uuid = require('uuid/v4')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const multer = require('multer')
-const User = mongoose.model('User')
-const Post = mongoose.model('Post')
-const Following = mongoose.model('Following')
-const Followers = mongoose.model('Follower')
-const Notification = mongoose.model('Notification')
-const ChatRoom = mongoose.model('ChatRoom')
-const Message = mongoose.model('Message')
+const User = require('../models/User')
+const Post = require('../models/Post')
+const Following = require('../models/Following')
+const Followers = require('../models/Follower')
+const Notification = require('../models/Notification')
+const ChatRoom = require('../models/ChatRoom')
+const Message = require('../models/Message')
 const notificationHandler = require('../handlers/notificationHandler')
 const emailHandler = require('../handlers/emailHandler')
 const messageHandler = require('../handlers/messageHandler')
 
 function checkFileType(file, cb) {
 	const filetypes = /jpeg|jpg|png|gif/
-	const extname = filetypes.test(
-		path.extname(file.originalname).toLowerCase()
-	)
+	const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
 	const mimetype = filetypes.test(file.mimetype)
 
 	if (mimetype && extname) {
@@ -58,11 +56,10 @@ exports.upload = (req, res, next) => {
 		req.body.photo = req.file.filename
 		Jimp.read(req.file.path, function (err, test) {
 			if (err) throw err
-			test.resize(100, 100)
+			test
+				.resize(100, 100)
 				.quality(50)
-				.write(
-					'./public/images/profile-picture/100x100/' + req.body.photo
-				)
+				.write('./public/images/profile-picture/100x100/' + req.body.photo)
 			next()
 		})
 	})
@@ -253,7 +250,8 @@ exports.addUser = (req, res) => {
 						username: req.body.username,
 						password: hash,
 					})
-					user.save()
+					user
+						.save()
 						.then((user) => {
 							notificationHandler.sendNewUser({ req, user })
 							const following = new Following({
@@ -280,9 +278,7 @@ exports.addUser = (req, res) => {
 							})
 						})
 						.catch((err) => {
-							return res
-								.status(500)
-								.json({ message: err.message })
+							return res.status(500).json({ message: err.message })
 						})
 				}
 			})
@@ -306,10 +302,7 @@ exports.resetPassword = (req, res) => {
 		if (err) {
 			return res.status(500).json({ message: err })
 		} else {
-			User.findOneAndUpdate(
-				{ email: req.userData.email },
-				{ password: hash }
-			)
+			User.findOneAndUpdate({ email: req.userData.email }, { password: hash })
 				.then(() => {
 					return res.status(200).json({ message: 'password reseted' })
 				})
@@ -368,41 +361,35 @@ exports.loginUser = (req, res, next) => {
 					message: 'Incorrect credentials.',
 				})
 			} else {
-				bcrypt.compare(
-					req.body.password,
-					users[0].password,
-					(err, result) => {
-						if (err) {
-							return res.status(400).json({
-								message: 'Incorrect credentials.',
-							})
-						}
-						if (result) {
-							const token = jwt.sign(
-								{
-									email: users[0].email,
-									userId: users[0]._id,
-									username: users[0].username,
-								},
-								process.env.JWT_KEY,
-								{
-									expiresIn: '30m',
-								}
-							)
-
-							const user = {
-								_id: users[0]._id,
-								token: 'Bearer ' + token,
-							}
-							req.body.user = user
-							next()
-							return
-						}
-						return res
-							.status(400)
-							.json({ message: 'Incorrect credentials.' })
+				bcrypt.compare(req.body.password, users[0].password, (err, result) => {
+					if (err) {
+						return res.status(400).json({
+							message: 'Incorrect credentials.',
+						})
 					}
-				)
+					if (result) {
+						const token = jwt.sign(
+							{
+								email: users[0].email,
+								userId: users[0]._id,
+								username: users[0].username,
+							},
+							process.env.JWT_KEY,
+							{
+								expiresIn: '30m',
+							}
+						)
+
+						const user = {
+							_id: users[0]._id,
+							token: 'Bearer ' + token,
+						}
+						req.body.user = user
+						next()
+						return
+					}
+					return res.status(400).json({ message: 'Incorrect credentials.' })
+				})
 			}
 		})
 		.catch((err) => {
@@ -413,7 +400,8 @@ exports.loginUser = (req, res, next) => {
 
 exports.deleteUser = (req, res) => {
 	User.remove({ _id: req.userData.userId }).then((result) => {
-		res.status(200)
+		res
+			.status(200)
 			.json({
 				message: 'User deleted',
 			})
@@ -429,10 +417,7 @@ exports.updateUser = (req, res) => {
 	User.find({
 		$and: [
 			{
-				$or: [
-					{ email: req.body.email },
-					{ username: req.body.username },
-				],
+				$or: [{ email: req.body.email }, { username: req.body.username }],
 			},
 			{ _id: { $ne: req.userData.userId } },
 		],
@@ -473,9 +458,7 @@ exports.updateUser = (req, res) => {
 								expiresIn: '30m',
 							}
 						)
-						return res
-							.status(200)
-							.json({ user, token: 'Bearer ' + token })
+						return res.status(200).json({ user, token: 'Bearer ' + token })
 					})
 					.catch((err) => {
 						console.log(err)
@@ -618,10 +601,11 @@ exports.followUser = (req, res) => {
 				})
 					.save()
 					.then((room) => {
-						room.populate(
-							'members',
-							'username firstName lastName profilePicture activityStatus'
-						)
+						room
+							.populate(
+								'members',
+								'username firstName lastName profilePicture activityStatus'
+							)
 							.execPopulate()
 							.then((room) => {
 								messageHandler.sendRoom(req, {
