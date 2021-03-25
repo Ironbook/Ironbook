@@ -2,17 +2,20 @@ const mongoose = require('mongoose')
 const path = require('path')
 const fs = require('fs')
 const Jimp = require('jimp')
-const uuid = require('uuid')
+const uuid = require('uuid/v4')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const multer = require('multer')
-const User = require('../models/Users')
-const Post = require('../models/Post')
-const Following = require('../models/Following')
-const Followers = require('../models/Followers')
-const Notification = require('../models/Notification')
+const User = mongoose.model('User')
+const Post = mongoose.model('Post')
+const Following = mongoose.model('Following')
+const Followers = mongoose.model('Follower')
+const Notification = mongoose.model('Notification')
+const ChatRoom = mongoose.model('ChatRoom')
+const Message = mongoose.model('Message')
 const notificationHandler = require('../handlers/notificationHandler')
 const emailHandler = require('../handlers/emailHandler')
+const messageHandler = require('../handlers/messageHandler')
 
 function checkFileType(file, cb) {
 	const filetypes = /jpeg|jpg|png|gif/
@@ -20,6 +23,7 @@ function checkFileType(file, cb) {
 		path.extname(file.originalname).toLowerCase()
 	)
 	const mimetype = filetypes.test(file.mimetype)
+
 	if (mimetype && extname) {
 		return cb(null, true)
 	} else {
@@ -43,7 +47,7 @@ const upload = multer({
 		checkFileType(file, cb)
 	},
 	limits: {
-		fileSize: 1000 * 1000,
+		fileSize: 1024 * 1024,
 	},
 }).single('photo')
 
@@ -55,7 +59,7 @@ exports.upload = (req, res, next) => {
 		Jimp.read(req.file.path, function (err, test) {
 			if (err) throw err
 			test.resize(100, 100)
-				.quality(60)
+				.quality(50)
 				.write(
 					'./public/images/profile-picture/100x100/' + req.body.photo
 				)
@@ -110,173 +114,191 @@ exports.changeProfilePicture = (req, res) => {
 
 exports.activate = (req, res) => {
 	if (process.env.ENABLE_SEND_EMAIL === 'false') {
-		return res.status(200).header('Content-Type', 'text/html').send(
-			`<!DOCTYPE html>
-			<html lang="en">    
-				<head>
-					<meta charset="UTF-8">
-					<meta http-equiv="X-UA-Compatible" content="IE=edge">
-					<meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<meta name="theme-color" content="#000000">
-					<style>
-						.alert {
-							padding: 20px;
-							background-color: #f23d3d;
-							color: #1F2433;
-						}
-						</style>
-						<title>Ironbook</title>
-				</head>    
-				<body>
-					<div class="alert">
-						<strong>Error!</strong>
-					</div>    
-				</body>    
-			</html>`
-		)
+		return res.status(200).header('Content-Type', 'text/html')
+			.send(`<!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="theme-color" content="#000000">
+        <style>
+            .alert {
+                padding: 20px;
+                background-color: #f44336;
+                color: white;
+            }
+        </style>
+        <title>social-network</title>
+    </head>
+    
+    <body>
+        <div class="alert">
+            <strong>Error!</strong> Disabled.
+        </div>
+    
+    </body>
+    
+    </html>
+  `)
 	}
-
 	try {
 		const decoded = jwt.verify(req.params.token, process.env.JWT_KEY)
 		User.findByIdAndUpdate(decoded._id, {
 			activated: true,
 		})
 			.then(() => {
-				return res.status(200).header('Content-Type', 'text/html').send(
-					`<!DOCTYPE html>
-		  <html lang="en">      
-						<head>
-							<meta charset="UTF-8">
-							<meta http-equiv="X-UA-Compatible" content="IE=edge">
-							<meta name="viewport" content="width=device-width, initial-scale=1.0">
-							<meta name="theme-color" content="#000000">
-							<style>
-								.alert {
-									padding: 20px;
-									background-color: #4ead4e;
-									color: #1F2433;
-								}
-								</style>
-								<title>Ironbook</title>
-						</head>          
-						<body>
-							<div class="alert">
-								<strong>Account activated!</strong> .
-							</div>          
-						</body>          
-	  		</html>`
-				)
+				return res.status(200).header('Content-Type', 'text/html')
+					.send(`<!DOCTYPE html>
+          <html lang="en">
+      
+          <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+              <meta name="theme-color" content="#000000">
+              <style>
+                  .alert {
+                      padding: 20px;
+                      background-color: #4CAF50;
+                      color: white;
+                  }
+              </style>
+              <title>social-network</title>
+          </head>
+          
+          <body>
+              <div class="alert">
+                  <strong>Success!</strong> Account activated.
+              </div>
+          
+          </body>
+          
+          </html>
+          `)
 			})
 			.catch((err) => {
 				console.log(err)
-				return res.status(401).header('Content-Type', 'text/html').send(
-					`<!DOCTYPE html>
-		  	<html lang="en">          
-		  		<head>
-								<meta charset="UTF-8">
-								<meta http-equiv="X-UA-Compatible" content="IE=edge">
-								<meta name="viewport" content="width=device-width, initial-scale=1.0">
-								<meta name="theme-color" content="#000000">
-			  <style>
-				.alert {
-				  padding: 20px;
-				  background-color: #f23d3d;
-				  color: #1F2433;
-				}
-			  </style>
-			  <title>Ironbook</title>
-		  	</head>          
-		  	<body>
-			  <div class="alert">
-				<strong>Error!</strong> Something went wrong.
-			  </div>          
-		  	</body>          
-			</html>`
-				)
+				return res.status(401).header('Content-Type', 'text/html')
+					.send(`<!DOCTYPE html>
+          <html lang="en">
+          
+          <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+              <meta name="theme-color" content="#000000">
+              <style>
+                  .alert {
+                      padding: 20px;
+                      background-color: #f44336;
+                      color: white;
+                  }
+              </style>
+              <title>social-network</title>
+          </head>
+          
+          <body>
+              <div class="alert">
+                  <strong>Error!</strong> Something went wrong.
+              </div>
+          
+          </body>
+          
+          </html>
+        `)
 			})
 	} catch (err) {
-		return res.status(401).header('Content-Type', 'text/html').send(
-			`<!DOCTYPE html>
-	  	<html lang="en">      
-	  	<head>
-					<meta charset="UTF-8">
-					<meta http-equiv="X-UA-Compatible" content="IE=edge">
-					<meta name="viewport" content="width=device-width, initial-scale=1.0">
-					<meta name="theme-color" content="#000000">
-		  <style>
-			.alert {
-			  padding: 20px;
-			  background-color: #f23d3d;
-			  color: #1F2433;
-			}
-		  </style>
-		  <title>Ironbook</title>
-	  	</head>      
-	  	<body>
-		  <div class="alert">
-			<strong>Error!</strong> Token Invalid.
-		  </div>      
-	  	</body>      
-	  </html>`
-		)
+		return res.status(401).header('Content-Type', 'text/html')
+			.send(`<!DOCTYPE html>
+      <html lang="en">
+      
+      <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+          <meta name="theme-color" content="#000000">
+          <style>
+              .alert {
+                  padding: 20px;
+                  background-color: #f44336;
+                  color: white;
+              }
+          </style>
+          <title>social-network</title>
+      </head>
+      
+      <body>
+          <div class="alert">
+              <strong>Error!</strong> Invalid token.
+          </div>
+      
+      </body>
+      
+      </html>
+    `)
 	}
 }
 
-exports.addUser = async (req, res) => {
-	const users = await User.find({
+exports.addUser = (req, res) => {
+	User.findOne({
 		$or: [{ email: req.body.email }, { username: req.body.username }],
-	})
-	const [user] = users
-	if (!user) {
-		bcrypt.hash(req.body.password, 10, async (err, hash) => {
-			if (err) {
-				return res.status(500).json({ error: err })
-			} else {
-				const user = new User({
-					email: req.body.email,
-					firstName: req.body.firstName,
-					lastName: req.body.lastName,
-					username: req.body.username,
-					password: hash,
-				})
-				try {
-					await user.save()
-					notificationHandler.sendNewUser({ req, user })
-					const following = new Following({ user: user._id }).save()
-					const followers = new Followers({ user: user._id }).save()
-					Promise.all([following, followers]).then(() => {
-						if (process.env.ENABLE_SEND_EMAIL === 'true') {
-							emailHandler.sendVerificationEmail({
-								email: user.email,
-								_id: user._id,
-								username: user.username,
-							})
-							return res.status(201).json({
-								message: 'Verify your email address',
-							})
-						} else {
-							return res.status(201).json({
-								message: 'Account created',
-							})
-						}
+	}).then((user) => {
+		if (!user) {
+			bcrypt.hash(req.body.password, 10, (err, hash) => {
+				if (err) {
+					return res.status(500).json({ error: err })
+				} else {
+					const user = new User({
+						email: req.body.email,
+						firstName: req.body.firstName,
+						lastName: req.body.lastName,
+						username: req.body.username,
+						password: hash,
 					})
-				} catch (err) {
-					return res.status(500).json({ message: err.message })
+					user.save()
+						.then((user) => {
+							notificationHandler.sendNewUser({ req, user })
+							const following = new Following({
+								user: user._id,
+							}).save()
+							const followers = new Followers({
+								user: user._id,
+							}).save()
+							Promise.all([following, followers]).then(() => {
+								if (process.env.ENABLE_SEND_EMAIL === 'true') {
+									emailHandler.sendVerificationEmail({
+										email: user.email,
+										_id: user._id,
+										username: user.username,
+									})
+									return res.status(201).json({
+										message: 'Verify your email address',
+									})
+								} else {
+									return res.status(201).json({
+										message: 'Account created',
+									})
+								}
+							})
+						})
+						.catch((err) => {
+							return res
+								.status(500)
+								.json({ message: err.message })
+						})
 				}
+			})
+		} else {
+			if (user.username === req.body.username) {
+				return res.status(409).json({
+					message: 'Username exists',
+				})
 			}
-		})
-	} else {
-		if (user.email === req.body.email) {
-			return res.status(409).json({
-				message: 'Email exists',
-			})
+			if (user.email === req.body.email) {
+				return res.status(409).json({
+					message: 'Email exists',
+				})
+			}
 		}
-		if (user.username === req.body.username) {
-			return res.status(409).json({
-				message: 'username exists',
-			})
-		}
-	}
+	})
 }
 
 exports.resetPassword = (req, res) => {
@@ -289,7 +311,7 @@ exports.resetPassword = (req, res) => {
 				{ password: hash }
 			)
 				.then(() => {
-					return res.status(200).json({ message: 'password reset.' })
+					return res.status(200).json({ message: 'password reseted' })
 				})
 				.catch((err) => {
 					console.log(err.message)
@@ -312,6 +334,7 @@ exports.sendVerificationEmail = (req, res) => {
 }
 
 exports.sendforgotPasswordEmail = (req, res) => {
+	console.log(req.body)
 	User.findOne({ email: req.body.email })
 		.select('email username')
 		.then((user) => {
@@ -327,10 +350,7 @@ exports.loginUser = (req, res, next) => {
 	User.aggregate([
 		{
 			$match: {
-				$or: [
-					{ email: req.body.email },
-					{ username: req.body.username },
-				],
+				$or: [{ email: req.body.email }, { username: req.body.email }],
 			},
 		},
 		{
@@ -369,6 +389,7 @@ exports.loginUser = (req, res, next) => {
 									expiresIn: '30m',
 								}
 							)
+
 							const user = {
 								_id: users[0]._id,
 								token: 'Bearer ' + token,
@@ -423,10 +444,9 @@ exports.updateUser = (req, res) => {
 
 				if (username === req.body.username) {
 					return res.status(409).json({
-						message: 'username exists',
+						message: 'Username exists',
 					})
 				}
-
 				if (email === req.body.email) {
 					return res.status(409).json({
 						message: 'Email exists',
@@ -540,6 +560,7 @@ exports.getUserData = (req, res, next) => {
 			},
 		]
 	}
+
 	const notification = Notification.find({
 		receiver: mongoose.Types.ObjectId(req.userData.userId),
 		read: false,
@@ -553,18 +574,12 @@ exports.getUserData = (req, res, next) => {
 		author: mongoose.Types.ObjectId(req.userData.userId),
 	}).countDocuments()
 
-	let messages = 0
-	try {
-		messages = Message.find({
-			receiver: mongoose.Types.ObjectId(req.userData.userId),
-			read: false,
-		}).countDocuments()
-	} catch (err) {
-		console.log('Error loading messages:', err)
-	}
+	const messages = Message.find({
+		receiver: mongoose.Types.ObjectId(req.userData.userId),
+		read: false,
+	}).countDocuments()
 
 	const user = User.aggregate(q)
-
 	Promise.all([user, notification, posts, messages, allNotification])
 		.then((values) => {
 			const user = values[0]
@@ -595,6 +610,33 @@ exports.sendUserData = (req, res) => {
 }
 
 exports.followUser = (req, res) => {
+	ChatRoom.find({ members: { $all: [req.userData.userId, req.body.userId] } })
+		.then((room) => {
+			if (!room.length) {
+				new ChatRoom({
+					members: [req.body.userId, req.userData.userId],
+				})
+					.save()
+					.then((room) => {
+						room.populate(
+							'members',
+							'username firstName lastName profilePicture activityStatus'
+						)
+							.execPopulate()
+							.then((room) => {
+								messageHandler.sendRoom(req, {
+									userId: req.body.userId,
+									room: room.toObject(),
+								})
+							})
+					})
+			}
+		})
+		.catch((err) => {
+			return res.status(500).json({
+				message: err.message,
+			})
+		})
 	if (req.userData.userId !== req.body.userId) {
 		Following.updateOne(
 			{
@@ -906,6 +948,7 @@ exports.searchUsersByUsername = (req, res) => {
 exports.getFollowings = (req, res, next) => {
 	User.aggregate([
 		{ $match: { _id: mongoose.Types.ObjectId(req.userData.userId) } },
+
 		{
 			$lookup: {
 				from: 'followings',
@@ -933,9 +976,7 @@ exports.getUserProfileFollowers = (req, res) => {
 		.then((users) => {
 			return res.status(200).json({ users })
 		})
-		.catch((err) => {
-			res.status(500).json({ message: err.message })
-		})
+		.catch((err) => res.status(500).json({ message: err.message }))
 }
 
 exports.getUserProfileFollowings = (req, res) => {
