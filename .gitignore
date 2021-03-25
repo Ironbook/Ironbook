@@ -8,7 +8,6 @@ server/.env
 client/.env
 client/build
 
-
 **/.env
 **/.DS_Store
 .DS_Store
