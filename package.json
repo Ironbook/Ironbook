@@ -1,22 +1,17 @@
 {
-  "name": "ironplate",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "echo --- preinstall --- && cd server && npm install && cd ../client && npm install && npm run build && cd ..",
-    "start": "echo --- start --- && cd server && npm start"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Tzikas/IronPlate.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Tzikas/IronPlate/issues"
-  },
-  
-  "homepage": "https://github.com/Tzikas/IronPlate#readme"
+	"name": "ironbook",
+	"version": "2.1.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"preinstall": "echo --- preinstall --- && cd server && npm install && cd ../client && npm install && npm run build && cd ..",
+		"start": "echo --- start --- && cd server && npm start"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Ironbook/Ironbook.git"
+	},
+	"author": "Conan Browne, Rastko Durica, Heather Michaels",
+	"license": "MIT"
 }
