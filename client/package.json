@@ -15,6 +15,7 @@
   "dependencies": {
     "autosuggest-highlight": "^3.1.1",
     "axios": "^0.21.1",
+    "dayjs": "^1.10.4",
     "jwt-decode": "^3.1.2",
     "linkifyjs": "^2.1.9",
     "node-sass": "^5.0.0",
