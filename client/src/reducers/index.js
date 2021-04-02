@@ -18,20 +18,20 @@ import { user } from './userReducer'
 import { userConstants } from '../constants/userConstants'
 
 const appReducer = combineReducers({
-	// alert,
-	// authentication,
-	// chat,
-	// comment,
-	// replies,
-	// newUsers,
-	// notification,
-	// passwordReset,
-	// post,
-	// postUpload,
-	// registration
-	// socket,
-	// userProfile,
-	// user,
+	alert,
+	authentication,
+	chat,
+	comment,
+	replies,
+	newUsers,
+	notification,
+	passwordReset,
+	post,
+	postUpload,
+	registration
+	socket,
+	userProfile,
+	user,
 })
 
 const rootReducer = (state, action) => {
